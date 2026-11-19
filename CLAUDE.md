@@ -41,9 +41,14 @@ There are no tests yet. Web Audio needs localhost or https, not file://.
 
 ## Known issues
 
-- "Tempt it" never makes the guard move. The three accents land together and get demoted to plain hits, so the pulse peaks at about 1.4–1.5× the mean, below the 1.6–2.15× thresholds.
+- With legal loop lengths, a pulse can concentrate onto at most half the phases of a 4- or 8-step grid, so the guard's peak ratio tops out near 2×. The Strict bar threshold (2.15×) therefore almost never fires; in practice the guard only reacts to beat pulses on Strict, and to both on Absolute. Worth retuning once the listener is reworked.
 - `V.gong` and `V.hatO` in `dsp/voices.js` are written but not used by any voice.
 - Copy rhythm has no matching paste or import.
+
+## To do
+
+- Rename every voice away from drum-kit terms (kick, snare, hat, clap, tom). Look for names that describe what the sound does in the cycle (pulse, click and so on), or that draw on the rhythmic cultures under Design direction, such as dum/tak strokes, khali (the empty part of the cycle) or a timeline bell. The goal is to drop the kick/snare/hi-hat vocabulary everywhere: UI labels, `VO` names, circuit names in `dsp/voices.js`, presets and the README.
+- Add the khali region or dum/tak strokes (see Design direction).
 
 ## Design direction
 

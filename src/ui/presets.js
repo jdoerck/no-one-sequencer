@@ -83,14 +83,22 @@ function generate() {
 }
 
 // Force kick, snare and hat onto a shared 6-step pulse so the guard has something to break up.
+// All hits sit on even steps of a 6-step loop, which lands every one of them on the same two
+// phases of a 4-step beat (the strongest pulse a non-bar length can make). Only one accent
+// falls on each step, so the accents are not unstacked into plain hits.
+const TEMPT_STEPS = {
+  0: [0, 0, 3, 0, 2, 0], // kick: accent, hit
+  2: [0, 0, 0, 0, 3, 0], // snare: accent
+  4: [0, 0, 2, 0, 2, 0], // hat: hit, hit
+};
 function tempt() {
   const pat = st.pat;
-  [0, 2, 4].forEach((i, j) => {
+  [0, 2, 4].forEach((i) => {
     const v = pat.voices[i];
     v.len = 6;
     v.rot = 0;
     v.mute = 0;
-    v.steps = [0, 0, 3, 0, 0, j === 2 ? 2 : 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    v.steps = [...TEMPT_STEPS[i], ...Array(10).fill(0)];
   });
   pat.name = 'Your rhythm';
   syncRows();
