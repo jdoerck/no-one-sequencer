@@ -33,7 +33,7 @@ Voices are named for their role in the cycle, not after drum-kit parts. Don't re
 
 | Voice | Role | Was |
 |---|---|---|
-| Dum | low, heavy stroke (from Arabic iqa') | kick |
+| Pulse | low, heavy stroke | kick |
 | Drop | pitched body with a falling pitch | tom |
 | Tak | high, dry stroke (iqa') | snare |
 | Tali | burst of claps; tali is the clap that marks a tala | clap |

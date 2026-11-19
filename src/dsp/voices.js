@@ -4,7 +4,7 @@ import {TAU, rnd, norm} from './util.js';
 import {bq, run} from './biquad.js';
 export const RAT = [1, 1.483, 1.734, 2.051, 2.394, 2.812];
 export const V = {
-  dum(P, sr, acc) {
+  pulse(P, sr, acc) {
     const f0 = 1 / (TAU * P.rT * P.cT),
       tau = P.rD * P.cD * (P.fb ? 3 : 1),
       tp = P.rP * P.cP,

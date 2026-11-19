@@ -4,8 +4,8 @@
 // weight in the guard's pulse detector (w), and reverb send.
 export const VO = [
   {
-    n: 'Dum',
-    fn: 'dum',
+    n: 'Pulse',
+    fn: 'pulse',
     P: {rT: 47000, cT: 4.7e-8, rD: 470000, cD: 1e-6, rP: 10000, cP: 1e-6, sweep: 2, drive: 0.3, click: 0.3},
     tk: ['rT'],
     dk: ['rD'],
