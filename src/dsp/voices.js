@@ -4,7 +4,7 @@ import {TAU, rnd, norm} from './util.js';
 import {bq, run} from './biquad.js';
 export const RAT = [1, 1.483, 1.734, 2.051, 2.394, 2.812];
 export const V = {
-  kick(P, sr, acc) {
+  dum(P, sr, acc) {
     const f0 = 1 / (TAU * P.rT * P.cT),
       tau = P.rD * P.cD * (P.fb ? 3 : 1),
       tp = P.rP * P.cP,
@@ -27,7 +27,7 @@ export const V = {
     }
     return norm(o);
   },
-  tom(P, sr, acc) {
+  drop(P, sr, acc) {
     const f0 = 1 / (TAU * P.rT * P.cT),
       tau = P.rD * P.cD * (P.ring ? 2.5 : 1),
       tp = P.slack ? 0.2 : 0.06,
@@ -48,7 +48,7 @@ export const V = {
     }
     return norm(o);
   },
-  snare(P, sr, acc) {
+  tak(P, sr, acc) {
     const f0 = 1 / (TAU * P.rT * P.cT),
       tb = P.rD * P.cD,
       fc = 1 / (TAU * P.rF * P.cF),
@@ -71,7 +71,7 @@ export const V = {
     }
     return norm(o);
   },
-  clap(P, sr, acc) {
+  tali(P, sr, acc) {
     const fc = 1 / (TAU * P.rF * P.cF),
       T = 0.7 * P.rB * P.cB,
       td = P.rD * P.cD,
@@ -124,7 +124,7 @@ export const V = {
     }
     return norm(o);
   },
-  hatC(P, sr, acc) {
+  tick(P, sr, acc) {
     return V.metal(
       1 / (TAU * P.rM * P.cM),
       1 / (TAU * P.rB * P.cB),
@@ -137,7 +137,7 @@ export const V = {
       1,
     );
   },
-  hatO(P, sr, acc) {
+  wash(P, sr, acc) {
     return V.metal(
       1 / (TAU * P.rM * P.cM),
       1 / (TAU * P.rB * P.cB),
@@ -150,11 +150,11 @@ export const V = {
       3,
     );
   },
-  gong(P, sr, acc) {
+  ring(P, sr, acc) {
     const b = 1 / (TAU * P.rM * P.cM);
     return V.metal(b, b * 6, P.rD * P.cD, 6, sr, acc, 500 + P.tone * 6000, P.ring, 5);
   },
-  clang(P, sr, acc) {
+  bell(P, sr, acc) {
     const f1 = 1 / (TAU * P.rA * P.cA),
       f2 = 1 / (TAU * P.rB * P.cB),
       tau = P.rD * P.cD,

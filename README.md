@@ -29,7 +29,7 @@ Web Audio needs a secure context, so open it from localhost or https rather than
       dsp/                sample-level synthesis, no Web Audio
         util.js           TAU, noise, normalise
         biquad.js         per-sample biquad filter
-        voices.js         voice circuits (kick, tom, snare, clap, hats, gong, clang)
+        voices.js         voice circuits (dum, drop, tak, tali, tick, wash, ring, bell)
       audio/
         chain.js          output stage: spring reverb, tape drive, hiss, master
         engine.js         renders voice buffers, plays hits, re-renders on tune/decay

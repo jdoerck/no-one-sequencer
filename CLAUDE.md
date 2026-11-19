@@ -27,6 +27,21 @@ There are no tests yet. Web Audio needs localhost or https, not file://.
 - `src/ui/` has one module per panel, plus `monitor.js` for the canvas and `persist.js` for the debounced save.
 - `src/export/` has the 32-second offline render with its WAV and ZIP encoders, and Copy rhythm.
 
+## Voices
+
+Voices are named for their role in the cycle, not after drum-kit parts. Don't reintroduce kick, snare, hat or similar terms in the UI, code or docs. This is a first pass, and J may still change the names.
+
+| Voice | Role | Was |
+|---|---|---|
+| Dum | low, heavy stroke (from Arabic iqa') | kick |
+| Drop | pitched body with a falling pitch | tom |
+| Tak | high, dry stroke (iqa') | snare |
+| Tali | burst of claps; tali is the clap that marks a tala | clap |
+| Tick | short, light metallic pulse | closed hat |
+| Bell | clangy timeline voice | clang |
+| Wash (unused) | long metallic wash | open hat |
+| Ring (unused) | long decaying ring, punctuation | gong |
+
 ## Conventions
 
 - Plain ES modules with no framework and no runtime dependencies. Keep the build output to a single file.
@@ -42,12 +57,11 @@ There are no tests yet. Web Audio needs localhost or https, not file://.
 ## Known issues
 
 - With legal loop lengths, a pulse can concentrate onto at most half the phases of a 4- or 8-step grid, so the guard's peak ratio tops out near 2×. The Strict bar threshold (2.15×) therefore almost never fires; in practice the guard only reacts to beat pulses on Strict, and to both on Absolute. Worth retuning once the listener is reworked.
-- `V.gong` and `V.hatO` in `dsp/voices.js` are written but not used by any voice.
+- `V.wash` and `V.ring` in `dsp/voices.js` are written but not used by any voice.
 - Copy rhythm has no matching paste or import.
 
 ## To do
 
-- Rename every voice away from drum-kit terms (kick, snare, hat, clap, tom). Look for names that describe what the sound does in the cycle (pulse, click and so on), or that draw on the rhythmic cultures under Design direction, such as dum/tak strokes, khali (the empty part of the cycle) or a timeline bell. The goal is to drop the kick/snare/hi-hat vocabulary everywhere: UI labels, `VO` names, circuit names in `dsp/voices.js`, presets and the README.
 - Add the khali region or dum/tak strokes (see Design direction).
 
 ## Design direction

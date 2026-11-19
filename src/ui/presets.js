@@ -82,14 +82,14 @@ function generate() {
   toast('New rhythm. No bar lines anywhere.');
 }
 
-// Force kick, snare and hat onto a shared 6-step pulse so the guard has something to break up.
+// Force dum, tak and tick onto a shared 6-step pulse so the guard has something to break up.
 // All hits sit on even steps of a 6-step loop, which lands every one of them on the same two
 // phases of a 4-step beat (the strongest pulse a non-bar length can make). Only one accent
 // falls on each step, so the accents are not unstacked into plain hits.
 const TEMPT_STEPS = {
-  0: [0, 0, 3, 0, 2, 0], // kick: accent, hit
-  2: [0, 0, 0, 0, 3, 0], // snare: accent
-  4: [0, 0, 2, 0, 2, 0], // hat: hit, hit
+  0: [0, 0, 3, 0, 2, 0], // dum: accent, hit
+  2: [0, 0, 0, 0, 3, 0], // tak: accent
+  4: [0, 0, 2, 0, 2, 0], // tick: hit, hit
 };
 function tempt() {
   const pat = st.pat;
@@ -107,8 +107,8 @@ function tempt() {
   if (!st.playing) setPlay(true);
   toast(
     pat.guard
-      ? 'Kick, snare and hat now share one 6-step pulse. Watch the listener pull them apart.'
-      : 'Kick, snare and hat now share one 6-step pulse. Gentle has no listener, so switch to Strict to see it dissolve.',
+      ? 'Dum, tak and tick now share one 6-step pulse. Watch the listener pull them apart.'
+      : 'Dum, tak and tick now share one 6-step pulse. Gentle has no listener, so switch to Strict to see it dissolve.',
   );
 }
 

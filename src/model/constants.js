@@ -4,8 +4,8 @@
 // weight in the guard's pulse detector (w), and reverb send.
 export const VO = [
   {
-    n: 'Kick',
-    fn: 'kick',
+    n: 'Dum',
+    fn: 'dum',
     P: {rT: 47000, cT: 4.7e-8, rD: 470000, cD: 1e-6, rP: 10000, cP: 1e-6, sweep: 2, drive: 0.3, click: 0.3},
     tk: ['rT'],
     dk: ['rD'],
@@ -13,8 +13,8 @@ export const VO = [
     send: 0.05,
   },
   {
-    n: 'Tom',
-    fn: 'tom',
+    n: 'Drop',
+    fn: 'drop',
     P: {rT: 68000, cT: 2.2e-8, rD: 220000, cD: 1e-6, drop: 0.8, noise: 0.2},
     tk: ['rT'],
     dk: ['rD'],
@@ -22,8 +22,8 @@ export const VO = [
     send: 0.2,
   },
   {
-    n: 'Snare',
-    fn: 'snare',
+    n: 'Tak',
+    fn: 'tak',
     P: {rT: 33000, cT: 2.2e-8, rD: 47000, cD: 2.2e-6, rF: 6800, cF: 1e-8, rS: 100000, cS: 2.2e-6, tone: 0.5},
     tk: ['rT', 'rF'],
     dk: ['rD', 'rS'],
@@ -31,8 +31,8 @@ export const VO = [
     send: 0.3,
   },
   {
-    n: 'Clap',
-    fn: 'clap',
+    n: 'Tali',
+    fn: 'tali',
     P: {rF: 10000, cF: 1.5e-8, rB: 15000, cB: 1e-6, rD: 100000, cD: 2.2e-6, n: 4},
     tk: ['rF'],
     dk: ['rD'],
@@ -40,8 +40,8 @@ export const VO = [
     send: 0.45,
   },
   {
-    n: 'Hat',
-    fn: 'hatC',
+    n: 'Tick',
+    fn: 'tick',
     P: {rM: 33000, cM: 1e-8, rB: 10000, cB: 2.2e-9, rC: 22000, cC: 1e-6},
     tk: ['rM', 'rB'],
     dk: ['rC'],
@@ -49,8 +49,8 @@ export const VO = [
     send: 0.15,
   },
   {
-    n: 'Clang',
-    fn: 'clang',
+    n: 'Bell',
+    fn: 'bell',
     P: {rA: 22000, cA: 1e-8, rB: 39000, cB: 1e-8, rD: 150000, cD: 1e-6},
     tk: ['rA', 'rB'],
     dk: ['rD'],
