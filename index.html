@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <title>No One</title>
+    <meta name="claude:viewport-fit-sides" content="cover" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;700&family=Saira+Stencil+One&display=swap"
+    />
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>
+          No <s>One</s><small>A drum machine with no downbeat · polymetric loops guarded against the 1</small>
+        </h1>
+        <div class="bar">
+          <select id="preset" aria-label="Rhythm"></select>
+          <button id="gen" type="button">New rhythm</button>
+          <button id="tempt" type="button">Tempt it</button>
+          <button id="play" type="button" aria-pressed="false">Play</button>
+        </div>
+      </header>
+
+      <section class="mon" aria-label="Orbits and gravity meter">
+        <canvas id="mc"></canvas>
+        <div class="monbar" id="ro">
+          Press Play. Each ring is a loop of its own length; the bars on the right show whether a steady pulse
+          is forming.
+        </div>
+      </section>
+
+      <section class="chip">
+        <h2>
+          <div><span>U1</span>Downbeat guard</div>
+          <em id="guardro"></em>
+        </h2>
+        <div class="seg" id="guard" role="group" aria-label="Guard strength"></div>
+        <ul class="rules" id="rules"></ul>
+        <p class="note">There is no off switch.</p>
+      </section>
+
+      <section class="chip">
+        <h2>
+          <div><span>U2</span>Loops</div>
+          <em id="lcmro"></em>
+        </h2>
+        <div class="rows"><div class="rowsin" id="rows"></div></div>
+        <div class="legend">
+          <span><i style="background: #2a5a44"></i>Ghost</span
+          ><span><i style="background: var(--phos)"></i>Hit</span
+          ><span><i style="background: var(--led)"></i>Accent</span
+          ><span><i style="border-style: dashed"></i>First step: ghost only</span>
+        </div>
+        <p class="note">
+          Tap a step to cycle hit, accent, ghost, off. Lengths that would make a bar (2, 4, 8, 12, 16) are not
+          on the menu. The arrows rotate a loop against the others.
+        </p>
+        <div class="ctl" style="max-width: 420px">
+          <label for="tempo">Tempo</label><output id="tempoO"></output
+          ><input type="range" id="tempo" min="50" max="170" step="1" />
+        </div>
+      </section>
+
+      <section class="board">
+        <div class="chip">
+          <h2>
+            <div><span>U3</span>Voices</div>
+          </h2>
+          <div class="vtab" id="vtab"></div>
+        </div>
+        <div class="chip" id="out">
+          <h2>
+            <div><span>U4</span>Output stage</div>
+          </h2>
+        </div>
+      </section>
+
+      <section class="bar">
+        <button id="exp" type="button" hidden>Export 32 seconds (.zip)</button>
+        <button id="copy" type="button">Copy rhythm</button>
+      </section>
+      <p class="note">
+        The voices are the Night Circuit Drums circuits. The guard runs the same way in export, so a rendered
+        take is as free of the 1 as what you hear live.
+      </p>
+    </div>
+    <div id="toast" hidden></div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

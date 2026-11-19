@@ -1,0 +1,17 @@
+{
+  "name": "no-one-sequencer",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "format": "prettier --write src index.html"
+  },
+  "devDependencies": {
+    "prettier": "^3.10.1",
+    "vite": "^8.3.8",
+    "vite-plugin-singlefile": "^2.3.4"
+  }
+}
