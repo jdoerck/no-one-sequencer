@@ -71,6 +71,32 @@ export const V = {
     }
     return norm(o);
   },
+  // Breath: band-passed noise with a slow swell and a falling formant, like an exhale.
+  // rF*cF sets the formant, rA*cA the swell (attack), rD*cD the release.
+  breath(P, sr, acc) {
+    const fc = 1 / (TAU * P.rF * P.cF),
+      ta = P.rA * P.cA,
+      td = P.rD * P.cD,
+      L = Math.ceil(sr * Math.min(3, ta * 3 + td * 6 + 0.05)),
+      o = new Float32Array(L);
+    let f1 = bq('bp', fc, 1.3, sr),
+      f2 = bq('bp', fc * 2.3, 1.8, sr),
+      flut = 0;
+    for (let i = 0; i < L; i++) {
+      const t = i / sr;
+      // Re-tune the two formants every 64 samples as the exhale falls in pitch.
+      if (i % 64 === 0) {
+        const f = fc * (1 + (acc ? 0.6 : 0.35) * Math.exp(-t / 0.12));
+        f1 = Object.assign(bq('bp', f, 1.3, sr), {x1: f1.x1, x2: f1.x2, y1: f1.y1, y2: f1.y2});
+        f2 = Object.assign(bq('bp', f * 2.3, 1.8, sr), {x1: f2.x1, x2: f2.x2, y1: f2.y1, y2: f2.y2});
+      }
+      flut += (rnd() - flut) * 0.002;
+      const env = (1 - Math.exp(-t / ta)) * Math.exp(-t / td) * (1 + flut * 8),
+        x = rnd();
+      o[i] = Math.tanh((run(f1, x) + 0.5 * run(f2, x)) * env * 2.2 * (acc ? 1.4 : 1));
+    }
+    return norm(o);
+  },
   tali(P, sr, acc) {
     const fc = 1 / (TAU * P.rF * P.cF),
       T = 0.7 * P.rB * P.cB,

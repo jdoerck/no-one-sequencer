@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-No One is a polymetric drum machine with no downbeat. Six synthesized voices loop at
+No One is a polymetric drum machine with no downbeat. Seven synthesized voices loop at
 their own lengths, and a "guard" listener rotates any voice that starts to build a felt
 beat or bar. The goal now is to turn it from a sketch into a real instrument.
 
@@ -39,8 +39,11 @@ Voices are named for their role in the cycle, not after drum-kit parts. Don't re
 | Tali | burst of claps; tali is the clap that marks a tala | clap |
 | Tick | short, light metallic pulse | closed hat |
 | Bell | clangy timeline voice | clang |
+| Breath | soft exhale: band-passed noise that swells in and falls in pitch; low guard weight, a filler for quiet regions | new |
 | Wash (unused) | long metallic wash | open hat |
 | Ring (unused) | long decaying ring, punctuation | gong |
+
+Rhythms store voices by position. Add a new voice at the end of `VO`, give every preset a line for it, and extend the per-voice arrays in the generator (`ui/presets.js`). `sanitize()` fills missing trailing voices from preset 0, so older saves keep loading. Use `NV`, not a literal count.
 
 ## Conventions
 

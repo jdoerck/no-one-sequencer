@@ -57,7 +57,18 @@ export const VO = [
     w: 0.7,
     send: 0.3,
   },
+  {
+    n: 'Breath',
+    fn: 'breath',
+    P: {rF: 8200, cF: 1e-8, rA: 27000, cA: 2.2e-6, rD: 100000, cD: 3.3e-6},
+    tk: ['rF'],
+    dk: ['rD'],
+    w: 0.3, // soft filler: barely counts toward a felt pulse
+    send: 0.4,
+  },
 ];
+// Number of voices. Rhythms store voices by position, so new voices go at the end.
+export const NV = VO.length;
 
 // Loop lengths on offer (bar-making lengths 2, 4, 8, 12, 16 left out).
 export const LENS = [3, 5, 6, 7, 9, 10, 11, 13, 14, 15];

@@ -1,6 +1,6 @@
 // The downbeat guard and step clock. Shared by live play and offline export.
 import {TAU} from './dsp/util.js';
-import {VO, WGT} from './model/constants.js';
+import {VO, WGT, NV} from './model/constants.js';
 
 export function newState() {
   return {
@@ -20,7 +20,7 @@ export function newState() {
 export function advance(S, p) {
   const ev = [];
   let starts = 0;
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < NV; i++) {
     const v = p.voices[i];
     if (v.mute) continue;
     const idx = (((S.t + v.rot) % v.len) + v.len) % v.len;
@@ -35,7 +35,7 @@ export function advance(S, p) {
     S.unstack++;
     acc.forEach((e) => (e.s = 2));
   }
-  const contrib = new Float32Array(6);
+  const contrib = new Float32Array(NV);
   let E = 0;
   ev.forEach((e) => {
     const w = VO[e.v].w * WGT[e.s];
@@ -67,12 +67,12 @@ export function advance(S, p) {
       let ph = 0;
       for (let k = 1; k < P; k++) if (sums[k] > sums[ph]) ph = k;
       if (sums[ph] / mean > thr[pi]) {
-        const vc = new Float32Array(6);
+        const vc = new Float32Array(NV);
         win.forEach((h) => {
-          if (h.t % P === ph) for (let i = 0; i < 6; i++) vc[i] += h.c[i];
+          if (h.t % P === ph) for (let i = 0; i < NV; i++) vc[i] += h.c[i];
         });
         let vi = 0;
-        for (let i = 1; i < 6; i++) if (vc[i] > vc[vi]) vi = i;
+        for (let i = 1; i < NV; i++) if (vc[i] > vc[vi]) vi = i;
         p.voices[vi].rot += 1;
         S.moved++;
         S.cool = 24;

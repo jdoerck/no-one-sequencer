@@ -49,7 +49,7 @@ function generate() {
   const pat = st.pat,
     pick = (a) => a[Math.floor(Math.random() * a.length)];
   const used = new Set();
-  const dens = [0.25, 0.18, 0.2, 0.12, 0.45, 0.15];
+  const dens = [0.25, 0.18, 0.2, 0.12, 0.45, 0.15, 0.15];
   const vs = VO.map((vo, i) => {
     let L;
     do {
@@ -73,7 +73,7 @@ function generate() {
       steps,
       rot: 0,
       mute: 0,
-      level: [0.85, 0.6, 0.75, 0.55, 0.45, 0.45][i],
+      level: [0.85, 0.6, 0.75, 0.55, 0.45, 0.45, 0.4][i],
       tune: pat.voices[i].tune,
       decay: pat.voices[i].decay,
     };

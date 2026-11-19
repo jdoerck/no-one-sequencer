@@ -1,5 +1,5 @@
 // Rhythm data: preset patterns, validation of loaded JSON, and localStorage persistence.
-import {LENS} from './constants.js';
+import {LENS, NV} from './constants.js';
 
 // Step string: '.' off, 'g' ghost, 'x' hit, 'X' accent. The first step is clamped to ghost.
 export const parse = (s) => {
@@ -26,6 +26,7 @@ export const PRESETS = [
     mkv(11, '.....x....g', {level: 0.55}),
     mkv(3, '.xg', {level: 0.5}),
     mkv(13, '........X....', {level: 0.45}),
+    mkv(10, '..g....x..', {level: 0.4}),
   ]),
   R('Prime field', 112, 1, [
     mkv(5, '.x..x'),
@@ -34,6 +35,7 @@ export const PRESETS = [
     mkv(7, '......x', {mute: 1}),
     mkv(5, 'gx.xx', {level: 0.45}),
     mkv(3, '..x', {level: 0.35}),
+    mkv(9, '...x...g.', {level: 0.35}),
   ]),
   R('Lopsided', 84, 2, [
     mkv(9, '..x....x.'),
@@ -42,6 +44,7 @@ export const PRESETS = [
     mkv(14, '.........x...g', {level: 0.5}),
     mkv(6, '.xgxg.', {level: 0.45}),
     mkv(15, '.....X.........', {level: 0.4}),
+    mkv(11, '.....g..x..', {level: 0.4}),
   ]),
   R('Sparse orbit', 70, 1, [
     mkv(11, '....x......'),
@@ -50,6 +53,7 @@ export const PRESETS = [
     mkv(9, '..g......', {level: 0.4}),
     mkv(7, '.x..x.g', {level: 0.35}),
     mkv(5, '...X.', {level: 0.5}),
+    mkv(14, '......x......g', {level: 0.45}),
   ]),
 ];
 
@@ -66,9 +70,10 @@ export function sanitize(o) {
   if (o.name) p.name = String(o.name).slice(0, 40);
   p.tempo = Math.round(n(o.tempo, 50, 170, 96));
   p.guard = Math.round(n(o.guard, 0, 2, 1));
-  if (Array.isArray(o.voices) && o.voices.length === 6)
-    p.voices = o.voices.map((v, i) => {
-      const d = p.voices[i];
+  // Rhythms saved before Breath was added have 6 voices; the missing ones take preset 0's defaults.
+  if (Array.isArray(o.voices) && o.voices.length >= 6 && o.voices.length <= NV)
+    p.voices = p.voices.map((d, i) => {
+      const v = o.voices[i];
       if (!v || typeof v !== 'object') return d;
       const len = LENS.includes(+v.len) ? +v.len : d.len;
       const steps = Array.from({length: 16}, (_, k) => {

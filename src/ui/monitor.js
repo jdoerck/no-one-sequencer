@@ -32,7 +32,7 @@ function draw() {
   const R0 = Math.min(h / 2 - 14, w * 0.3),
     cx = Math.min(w * 0.32, R0 + 20),
     cy = h / 2,
-    ring = R0 / 7.2;
+    ring = R0 / (VO.length + 1.2);
   VO.forEach((vo, i) => {
     const v = pat.voices[i],
       rr = R0 - i * ring,

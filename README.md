@@ -1,6 +1,6 @@
 # No One — A drum machine with no downbeat
 
-Polymetric drum synth: six voices, each looping at its own prime-ish length.
+Polymetric drum synth: seven voices, each looping at its own prime-ish length.
 A "guard" listener rotates loops away when it detects a solid beat or bar pulse
 starting to form. The result is rhythm without a fixed 1 / the bar you can feel
 but never lock onto.
@@ -29,7 +29,7 @@ Web Audio needs a secure context, so open it from localhost or https rather than
       dsp/                sample-level synthesis, no Web Audio
         util.js           TAU, noise, normalise
         biquad.js         per-sample biquad filter
-        voices.js         voice circuits (pulse, drop, tak, tali, tick, wash, ring, bell)
+        voices.js         voice circuits (pulse, drop, tak, tali, tick, bell, breath, wash, ring)
       audio/
         chain.js          output stage: spring reverb, tape drive, hiss, master
         engine.js         renders voice buffers, plays hits, re-renders on tune/decay
