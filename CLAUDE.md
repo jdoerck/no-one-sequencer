@@ -50,10 +50,11 @@ Rhythms store voices by position. Add a new voice at the end of `VO`, give every
 - Plain ES modules with no framework and no runtime dependencies. Keep the build output to a single file.
 - Hard rules of the instrument:
   - The first step of a loop is ghost only.
-  - Accents never stack.
+  - Dums never stack: two dums on one step-time both play as tak.
   - Bar-making lengths (2, 4, 8, 12, 16) are never offered.
   - The guard has no off switch.
 - New guard behaviour must run identically in live play and export, so put it in `guard.js`, not in the UI.
+- Step states: 0 off, 1 ghost (closed sound, quiet), 2 tak (closed sound), 3 dum (open sound, its own buffer). Each voice's `open` and `closed` overrides sit in its `VO` entry in `constants.js`; `vParams()` applies them.
 - Saved rhythms go through `sanitize()`. When you add a field to the rhythm model, add it there too, or old saves and imports will drop it.
 - After editing, run `npm run format`.
 
@@ -65,7 +66,7 @@ Rhythms store voices by position. Add a new voice at the end of `VO`, give every
 
 ## To do
 
-- Add the khali region or dum/tak strokes (see Design direction).
+- Add the khali region (see Design direction).
 
 ## Design direction
 

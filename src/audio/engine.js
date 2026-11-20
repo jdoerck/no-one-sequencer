@@ -5,14 +5,20 @@ import {chain} from './chain.js';
 import {st} from '../state.js';
 import {toast} from '../lib/dom.js';
 
-// Voice params with the rhythm's tune (semitones) and decay multiplier applied.
-export function vParams(i, p) {
+// Voice params with the rhythm's tune (semitones) and decay multiplier applied, then the stroke's overrides.
+// stroke is 'open' (dum), 'closed' (tak) or undefined for the base voice.
+export function vParams(i, p, stroke) {
   const vo = VO[i],
     v = p.voices[i],
     P = Object.assign({}, vo.P),
     tf = Math.pow(2, -v.tune / 12);
   vo.tk.forEach((k) => (P[k] *= tf));
   vo.dk.forEach((k) => (P[k] *= v.decay));
+  const ov = stroke && vo[stroke];
+  if (ov) {
+    for (const k in ov.m) P[k] *= ov.m[k];
+    Object.assign(P, ov.s);
+  }
   return P;
 }
 const toBuf = (ctx, d) => {
@@ -20,11 +26,13 @@ const toBuf = (ctx, d) => {
   b.getChannelData(0).set(d);
   return b;
 };
-// Normal (n) and accented (a) buffer per voice.
+// Closed (tak) and open (dum) buffer per voice.
 const renderVoice = (ctx, p, i) => {
-  const P = vParams(i, p),
-    fn = V[VO[i].fn];
-  return {n: toBuf(ctx, fn(P, ctx.sampleRate, false)), a: toBuf(ctx, fn(P, ctx.sampleRate, true))};
+  const fn = V[VO[i].fn];
+  return {
+    closed: toBuf(ctx, fn(vParams(i, p, 'closed'), ctx.sampleRate)),
+    open: toBuf(ctx, fn(vParams(i, p, 'open'), ctx.sampleRate)),
+  };
 };
 export function makeBufs(ctx, p) {
   return VO.map((_, i) => renderVoice(ctx, p, i));
@@ -52,10 +60,10 @@ export function ensure() {
   return true;
 }
 
-// Schedule one hit of voice i at step state s (1-3) at time t.
+// Schedule one hit of voice i at step state s (1-3) at time t. Dum (3) uses the open buffer, the rest closed.
 export function hit(ctx, ch, bufs, p, i, s, t) {
   const src = ctx.createBufferSource();
-  src.buffer = s === 3 ? bufs[i].a : bufs[i].n;
+  src.buffer = s === 3 ? bufs[i].open : bufs[i].closed;
   const g = ctx.createGain(),
     sg = ctx.createGain();
   g.gain.value = p.voices[i].level * AMP[s];

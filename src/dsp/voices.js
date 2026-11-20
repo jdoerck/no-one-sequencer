@@ -4,13 +4,13 @@ import {TAU, rnd, norm} from './util.js';
 import {bq, run} from './biquad.js';
 export const RAT = [1, 1.483, 1.734, 2.051, 2.394, 2.812];
 export const V = {
-  pulse(P, sr, acc) {
+  pulse(P, sr) {
     const f0 = 1 / (TAU * P.rT * P.cT),
       tau = P.rD * P.cD * (P.fb ? 3 : 1),
       tp = P.rP * P.cP,
       L = Math.ceil(sr * Math.min(4, tau * 6 + 0.05)),
       o = new Float32Array(L),
-      dr = 1 + P.drive * 5 * (acc ? 1.5 : 1),
+      dr = 1 + P.drive * 5,
       sw = Math.pow(2, P.sweep) - 1;
     let ph = 0,
       ph2 = 0;
@@ -27,10 +27,10 @@ export const V = {
     }
     return norm(o);
   },
-  drop(P, sr, acc) {
+  drop(P, sr) {
     const f0 = 1 / (TAU * P.rT * P.cT),
       tau = P.rD * P.cD * (P.ring ? 2.5 : 1),
-      tp = P.slack ? 0.2 : 0.06,
+      tp = P.tp || (P.slack ? 0.2 : 0.06),
       dd = P.slack ? P.drop * 1.6 : P.drop,
       L = Math.ceil(sr * Math.min(3, tau * 6 + 0.05)),
       o = new Float32Array(L);
@@ -42,17 +42,17 @@ export const V = {
       lp += (rnd() - lp) * 0.08;
       o[i] = Math.tanh(
         (Math.sin(TAU * ph) * Math.exp(-t / tau) + lp * 3 * P.noise * Math.exp(-t / 0.03)) *
-          1.4 *
-          (acc ? 1.4 : 1),
+          1.4,
       );
     }
     return norm(o);
   },
-  tak(P, sr, acc) {
+  tak(P, sr) {
     const f0 = 1 / (TAU * P.rT * P.cT),
       tb = P.rD * P.cD,
       fc = 1 / (TAU * P.rF * P.cF),
       ts = P.rS * P.cS * (P.loose ? 2.2 : 1),
+      bend = P.bend ?? 0.12,
       bp = bq('bp', fc, 0.8, sr),
       L = Math.ceil(sr * Math.min(3, Math.max(tb, ts) * 6 + 0.05)),
       o = new Float32Array(L);
@@ -60,20 +60,20 @@ export const V = {
       p2 = 0;
     for (let i = 0; i < L; i++) {
       const t = i / sr,
-        f = f0 * (1 + 0.12 * Math.exp(-t / 0.012));
+        f = f0 * (1 + bend * Math.exp(-t / 0.012));
       p1 += f / sr;
       p2 += (f * 1.47) / sr;
       let body = (Math.sin(TAU * p1) + 0.55 * Math.sin(TAU * p2)) * Math.exp(-t / tb);
       if (P.bitter) body *= 0.5 + 0.9 * Math.sin(TAU * f * 2.31 * t);
       let n = run(bp, rnd()) * Math.exp(-t / ts);
       if (P.loose) n *= 1 + 0.7 * Math.sign(Math.sin(TAU * 31 * t)) * Math.exp(-t / 0.15);
-      o[i] = Math.tanh((body * (1 - P.tone) + n * P.tone * 3) * 1.6 * (acc ? 1.4 : 1));
+      o[i] = Math.tanh((body * (1 - P.tone) + n * P.tone * 3) * 1.6);
     }
     return norm(o);
   },
   // Breath: band-passed noise with a slow swell and a falling formant, like an exhale.
   // rF*cF sets the formant, rA*cA the swell (attack), rD*cD the release.
-  breath(P, sr, acc) {
+  breath(P, sr) {
     const fc = 1 / (TAU * P.rF * P.cF),
       ta = P.rA * P.cA,
       td = P.rD * P.cD,
@@ -86,18 +86,18 @@ export const V = {
       const t = i / sr;
       // Re-tune the two formants every 64 samples as the exhale falls in pitch.
       if (i % 64 === 0) {
-        const f = fc * (1 + (acc ? 0.6 : 0.35) * Math.exp(-t / 0.12));
+        const f = fc * (1 + (P.fall ?? 0.35) * Math.exp(-t / 0.12));
         f1 = Object.assign(bq('bp', f, 1.3, sr), {x1: f1.x1, x2: f1.x2, y1: f1.y1, y2: f1.y2});
         f2 = Object.assign(bq('bp', f * 2.3, 1.8, sr), {x1: f2.x1, x2: f2.x2, y1: f2.y1, y2: f2.y2});
       }
       flut += (rnd() - flut) * 0.002;
       const env = (1 - Math.exp(-t / ta)) * Math.exp(-t / td) * (1 + flut * 8),
         x = rnd();
-      o[i] = Math.tanh((run(f1, x) + 0.5 * run(f2, x)) * env * 2.2 * (acc ? 1.4 : 1));
+      o[i] = Math.tanh((run(f1, x) + 0.5 * run(f2, x)) * env * 2.2);
     }
     return norm(o);
   },
-  tali(P, sr, acc) {
+  tali(P, sr) {
     const fc = 1 / (TAU * P.rF * P.cF),
       T = 0.7 * P.rB * P.cB,
       td = P.rD * P.cD,
@@ -119,11 +119,11 @@ export const V = {
       for (let k = 0; k < n - 1; k++) if (t >= times[k]) e = Math.max(e, Math.exp(-(t - times[k]) / 0.005));
       if (t >= tn) e = Math.max(e, Math.exp(-(t - tn) / td));
       const x = rnd();
-      o[i] = Math.tanh((run(bp, x) + (P.doubled ? 0.7 * run(bp2, x) : 0)) * e * 3 * (acc ? 1.4 : 1));
+      o[i] = Math.tanh((run(bp, x) + (P.doubled ? 0.7 * run(bp2, x) : 0)) * e * 3);
     }
     return norm(o);
   },
-  metal(base, fc, tau, oscs, sr, acc, lpf, ring, maxL) {
+  metal(base, fc, tau, oscs, sr, lpf, ring, maxL) {
     const bp = bq('bp', fc, 1.2, sr),
       hp = bq('hp', fc * 0.6, 0.7, sr),
       L = Math.ceil(sr * Math.min(maxL, tau * 6 + 0.03)),
@@ -146,41 +146,39 @@ export const V = {
         y = lp * 2.5;
       }
       if (ring) y *= Math.sin(TAU * base * 0.63 * t);
-      o[i] = Math.tanh(y * Math.exp(-t / tau) * 4 * (acc ? 1.4 : 1));
+      o[i] = Math.tanh(y * Math.exp(-t / tau) * 4);
     }
     return norm(o);
   },
-  tick(P, sr, acc) {
+  tick(P, sr) {
     return V.metal(
       1 / (TAU * P.rM * P.cM),
       1 / (TAU * P.rB * P.cB),
       P.rC * P.cC,
       P.broken ? 3 : 6,
       sr,
-      acc,
       0,
       0,
       1,
     );
   },
-  wash(P, sr, acc) {
+  wash(P, sr) {
     return V.metal(
       1 / (TAU * P.rM * P.cM),
       1 / (TAU * P.rB * P.cB),
       P.rO * P.cO,
       P.broken ? 3 : 6,
       sr,
-      acc,
       0,
       0,
       3,
     );
   },
-  ring(P, sr, acc) {
+  ring(P, sr) {
     const b = 1 / (TAU * P.rM * P.cM);
-    return V.metal(b, b * 6, P.rD * P.cD, 6, sr, acc, 500 + P.tone * 6000, P.ring, 5);
+    return V.metal(b, b * 6, P.rD * P.cD, 6, sr, 500 + P.tone * 6000, P.ring, 5);
   },
-  bell(P, sr, acc) {
+  bell(P, sr) {
     const f1 = 1 / (TAU * P.rA * P.cA),
       f2 = 1 / (TAU * P.rB * P.cB),
       tau = P.rD * P.cD,
@@ -192,7 +190,7 @@ export const V = {
       ln = 0;
     for (let i = 0; i < L; i++) {
       const t = i / sr,
-        d = 1 + 0.05 * Math.exp(-t / 0.01);
+        d = 1 + (P.bend ?? 0.05) * Math.exp(-t / 0.01);
       a += (f1 * d) / sr;
       b += (f2 * d) / sr;
       a -= Math.floor(a);
@@ -202,7 +200,7 @@ export const V = {
         ln += (rnd() - ln) * 0.02;
         s *= 0.4 + Math.abs(ln) * 6;
       }
-      o[i] = Math.tanh(run(bp, s) * Math.exp(-t / tau) * 3 * (acc ? 1.4 : 1));
+      o[i] = Math.tanh(run(bp, s) * Math.exp(-t / tau) * 3);
     }
     return norm(o);
   },

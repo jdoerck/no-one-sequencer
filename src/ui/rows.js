@@ -39,7 +39,7 @@ export function buildRows() {
       const c = document.createElement('button');
       c.type = 'button';
       c.className = 'cell' + (k === 0 ? ' first' : '');
-      // Cycle off -> hit -> accent -> ghost; the first step only toggles off <-> ghost.
+      // Cycle off -> tak -> dum -> ghost; the first step only toggles off <-> ghost.
       c.addEventListener('click', () => {
         const v = st.pat.voices[i];
         const order = k === 0 ? [0, 1] : [0, 2, 3, 1];
@@ -106,7 +106,7 @@ export function syncRows() {
       c.dataset.s = v.steps[k];
       c.setAttribute(
         'aria-label',
-        `${VO[i].n} step ${k + 1}: ${['off', 'ghost', 'hit', 'accent'][v.steps[k]]}`,
+        `${VO[i].n} step ${k + 1}: ${['off', 'ghost', 'tak', 'dum'][v.steps[k]]}`,
       );
     });
     sel.value = v.len;
