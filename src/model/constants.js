@@ -9,7 +9,7 @@ export const VO = [
     fn: 'pulse',
     open: {m: {rD: 1.6, rP: 1.5}, s: {sweep: 3, click: 0.15}},
     closed: {m: {rD: 0.35}, s: {sweep: 1, click: 0.8, drive: 0.5}},
-    accent: {m: {sweep: 1.8, rP: 1.5, click: 2, drive: 1.5}, s: {}},
+    accent: {m: {click: 1.5}, s: {}},
     P: {rT: 47000, cT: 4.7e-8, rD: 470000, cD: 1e-6, rP: 10000, cP: 1e-6, sweep: 2, drive: 0.3, click: 0.3},
     tk: ['rT'],
     dk: ['rD'],
