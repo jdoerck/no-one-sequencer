@@ -107,12 +107,12 @@ export const LENS = [3, 5, 6, 7, 9, 10, 11, 13, 14, 15];
 export const AMP = [0, 0.32, 1, 1.1],
   WGT = [0, 0.3, 1, 1.7];
 export const GUARDS = ['Gentle', 'Strict', 'Absolute'];
-// Khali width range in steps, and the rule text shown when it is on.
-export const KHALI_W = [3, 10];
-// Steps of complete silence that open every khali.
+// Khali share of each pass in percent (teental's khali is a quarter of its cycle), and the rule text.
+export const KHALI_W = [15, 40];
+// Steps of complete silence that open every khali when its hole option is on.
 export const KHALI_HOLE = 3;
 export const KHALI_RULE =
-  'Khali: a moving empty region. Nothing plays for its first 3 steps; after that only ghosts play, each with its step and the next one to itself.';
+  'Khali: in a moving section of the cycle the bass closes. Pulse and Drop fall to ghosts while the other voices play on.';
 // [minimum guard level, rule text]
 export const RULES = [
   [0, 'The first step of every loop can only whisper (ghost notes only).'],

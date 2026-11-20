@@ -55,7 +55,7 @@ Rhythms store voices by position. Add a new voice at the end of `VO`, give every
   - The guard has no off switch.
 - New guard behaviour must run identically in live play and export, so put it in `guard.js`, not in the UI.
 - Step states: 0 off, 1 ghost (closed sound, quiet), 2 tak (closed sound), 3 dum (open sound, its own buffer). Accent is a separate flag per step (`acc`, 0 or 1) that only tak or dum can carry; it has its own `accent` overrides per voice. Each voice's `open`, `closed` and `accent` overrides sit in its `VO` entry in `constants.js`; `vParams()` applies them. Shift-click or long-press toggles an accent.
-- Khali: `advance()` in `guard.js` thins events inside a moving region of the shared clock, before the guard sums energy. Each pass is 15-29 steps (no multiples of 4), redrawn every pass; the region is the first `khali.w` steps (3-10). J's rule: the first `KHALI_HOLE` (3) steps are silent; after that only ghosts play. Each step keeps at most one stroke (the first voice in order), played as an unaccented ghost, and the step after it is silent, even past the region's end. Rhythms store `khali: {on, w}`; old saves load with it off. Sparse orbit has it on. History: v1 dropped strokes one level and was inaudible; v2 dropped to ghosts with a Breath swell; v3 ghosts only, which J heard as an LFO-like volume dip, so v4 added the silent opening.
+- Khali: `advance()` in `guard.js` applies it to a moving region of the shared clock, before the guard sums energy. Each pass is 15-29 steps (no multiples of 4), redrawn every pass; the khali is the first `khali.w` percent of the pass (15-40, default 25, like teental's khali being a quarter of the cycle). Inside it the bass closes, as on tabla (dha becomes ta): Pulse and Drop fall to ghosts and lose accents, other voices play as written. `khali.hole` adds `KHALI_HOLE` (3) silent steps at the start. Rhythms store `khali: {on, w, hole}`; old saves load with it off. History: v1 one-level drop everywhere (inaudible), v2 ghosts plus Breath swell, v3 ghosts only with a rest after each (sounded like an LFO dip), v4 3-step hole, v5 (current) bass-only after reading how khali works on tabla.
 - Saved rhythms go through `sanitize()`. When you add a field to the rhythm model, add it there too, or old saves and imports will drop it.
 - After editing, run `npm run format`.
 
@@ -67,7 +67,7 @@ Rhythms store voices by position. Add a new voice at the end of `VO`, give every
 
 ## To do
 
-- Tune the khali by ear (width, pass range, how far strokes drop).
+- Tune the khali by ear (share, pass range, which voices count as bass).
 
 ## Design direction
 

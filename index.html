@@ -42,10 +42,13 @@
         <ul class="rules" id="rules"></ul>
         <p class="note">There is no off switch.</p>
         <div class="khali">
-          <div class="seg"><button type="button" id="khali" aria-pressed="false">Khali</button></div>
+          <div class="seg">
+            <button type="button" id="khali" aria-pressed="false">Khali</button
+            ><button type="button" id="khhole" aria-pressed="false">Silent start</button>
+          </div>
           <div class="ctl">
-            <label for="khw">Khali width</label><output id="khwO"></output
-            ><input type="range" id="khw" min="3" max="10" step="1" />
+            <label for="khw">Khali share of each pass</label><output id="khwO"></output
+            ><input type="range" id="khw" min="15" max="40" step="1" />
           </div>
         </div>
       </section>

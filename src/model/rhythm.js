@@ -12,7 +12,7 @@ export const parse = (s) => {
 };
 export const mkv = (len, str, o) => Object.assign({len, ...parse(str), rot: 0, mute: 0}, o || {});
 // Voices take their default level/tune/decay from VO unless the preset overrides them.
-const R = (name, tempo, guard, vs, khali = {on: 0, w: 6}) => ({
+const R = (name, tempo, guard, vs, khali = {on: 0, w: 25, hole: 0}) => ({
   name,
   tempo,
   guard,
@@ -81,7 +81,7 @@ export function sanitize(o) {
   p.guard = Math.round(n(o.guard, 0, 2, 1));
   // Rhythms saved before the khali was added load with it off.
   const k = o.khali && typeof o.khali === 'object' ? o.khali : {};
-  p.khali = {on: k.on ? 1 : 0, w: Math.round(n(k.w, 3, 10, 6))};
+  p.khali = {on: k.on ? 1 : 0, w: Math.round(n(k.w, 15, 40, 25)), hole: k.hole ? 1 : 0};
   // Rhythms saved before Breath was added have 6 voices; the missing ones take preset 0's defaults.
   if (Array.isArray(o.voices) && o.voices.length >= 6 && o.voices.length <= NV)
     p.voices = p.voices.map((d, i) => {

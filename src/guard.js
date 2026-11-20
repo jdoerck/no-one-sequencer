@@ -17,7 +17,6 @@ export function newState() {
     khPass: khaliPass(),
     khPos: Math.floor(Math.random() * 19),
     kh: 0,
-    khRest: 0,
   };
 }
 
@@ -29,31 +28,34 @@ export function khaliPass() {
   while (L % 4 === 0);
   return L;
 }
+// Length of the khali in the current pass: a share of the pass, like one section of a tala cycle.
+export const khaliLen = (S, k) => Math.max(KHALI_HOLE, Math.round((S.khPass * k.w) / 100));
 // Whether the clock is inside the khali: 0 outside, 2 inside.
 export function khaliDepth(S, p) {
   const k = p.khali;
-  return k && k.on && S.khPos < k.w ? 2 : 0;
+  return k && k.on && S.khPos < khaliLen(S, k) ? 2 : 0;
 }
+// The low voices play the part of the tabla's bass drum, which is closed during khali.
+const BASS = VO.map((v) => v.fn === 'pulse' || v.fn === 'drop');
 
-// The khali opens with KHALI_HOLE steps where nothing plays at all. For the rest of its width only
-// ghosts play: every stroke falls to a ghost and loses its accent, and each ghost gets its step and
-// the next one to itself (other strokes on its step and everything on the step after are dropped,
-// even when the step after is past the end of the khali).
+// Inside the khali the bass closes, as on tabla (dha becomes ta): the low voices fall to ghosts and
+// lose their accents, and the other voices play as written. With hole on, the khali also opens with
+// KHALI_HOLE steps where nothing plays at all.
 function khali(S, p, ev) {
   const d = khaliDepth(S, p);
   S.kh = d;
-  if (S.khRest || (d && S.khPos < KHALI_HOLE)) {
-    S.khRest = 0;
+  if (!d) return ev;
+  if (p.khali.hole && S.khPos < KHALI_HOLE) {
     S.emptied += ev.length;
     return [];
   }
-  if (!d || !ev.length) return ev;
   ev.forEach((e) => {
-    if (e.s > 1 || e.a) S.emptied++;
+    if (!BASS[e.v] || (e.s < 2 && !e.a)) return;
+    e.s = 1;
+    e.a = 0;
+    S.emptied++;
   });
-  S.emptied += ev.length - 1;
-  S.khRest = 1;
-  return [{...ev[0], s: 1, a: 0}];
+  return ev;
 }
 
 // Advance one step: return the events {v,s,a,k} to play and, if the guard is on, rotate a voice
