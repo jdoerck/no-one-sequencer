@@ -107,6 +107,10 @@ export const LENS = [3, 5, 6, 7, 9, 10, 11, 13, 14, 15];
 export const AMP = [0, 0.32, 1, 1.1],
   WGT = [0, 0.3, 1, 1.7];
 export const GUARDS = ['Gentle', 'Strict', 'Absolute'];
+// Khali width range in steps, and the rule text shown when it is on.
+export const KHALI_W = [4, 10];
+export const KHALI_RULE =
+  'Khali: a moving empty region where every stroke drops one level and accents fall away, while Breath swells.';
 // [minimum guard level, rule text]
 export const RULES = [
   [0, 'The first step of every loop can only whisper (ghost notes only).'],

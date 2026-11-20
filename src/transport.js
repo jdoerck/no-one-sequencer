@@ -14,7 +14,7 @@ function tick() {
     const S = st.S,
       ev = advance(S, pat);
     ev.forEach((e) => hit(AC, CH, BUF, pat, e.v, e.s, nextT, e.a));
-    queue.push({at: nextT, t: S.t - 1, E: S.hist[S.hist.length - 1].E});
+    queue.push({at: nextT, t: S.t - 1, E: S.hist[S.hist.length - 1].E, kh: S.kh});
     nextT += stepDur(S, pat);
   }
   if (st.S.flash) {

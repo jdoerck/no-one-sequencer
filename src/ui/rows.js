@@ -154,16 +154,22 @@ export function syncRows() {
 
 // Pop scheduled steps whose time has come and highlight the current cell in each row.
 export function showNow() {
-  let t = -1;
+  let t = -1,
+    kh = 0;
   if (st.playing && st.AC) {
     while (queue.length && queue[0].at <= st.AC.currentTime) {
       const q = queue.shift();
       t = q.t;
+      kh = q.kh;
       lastE.push(q);
       if (lastE.length > 64) lastE.shift();
     }
   }
-  if (t >= 0) st.shownT = t;
+  if (t >= 0) {
+    st.shownT = t;
+    st.shownKh = kh;
+  }
+  if (!st.playing) st.shownKh = 0;
   rowEls.forEach(({cs}, i) => {
     const v = st.pat.voices[i],
       idx = st.shownT < 0 ? -1 : stepIdx(v, st.shownT);

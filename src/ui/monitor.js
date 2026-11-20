@@ -37,7 +37,9 @@ function draw() {
     const v = pat.voices[i],
       rr = R0 - i * ring,
       idx = shownT < 0 ? -1 : stepIdx(v, shownT);
-    x.globalAlpha = v.mute ? 0.25 : 1;
+    // Inside the khali every ring but Breath's dims; Breath swells.
+    const dim = vo.fn === 'breath' ? 1 : [1, 0.65, 0.35][st.shownKh];
+    x.globalAlpha = (v.mute ? 0.25 : 1) * dim;
     for (let k = 0; k < v.len; k++) {
       const a0 = -Math.PI / 2 + (k / v.len) * TAU,
         a1 = a0 + (TAU / v.len) * 0.84,
@@ -113,7 +115,7 @@ function draw() {
   // Status line
   const msg = S.log ? `<span class="act">${S.log}</span>` : '';
   const base = st.playing
-    ? `<span>Guard <b>${GUARDS[pat.guard]}</b></span><span>Flat bars mean no felt downbeat; the dashed line is the average.</span>`
+    ? `<span>Guard <b>${GUARDS[pat.guard]}</b></span>${st.shownKh ? '<span class="act">Khali</span>' : ''}<span>Flat bars mean no felt downbeat; the dashed line is the average.</span>`
     : IDLE;
   const s = base + msg;
   if ($('#ro').innerHTML !== s) $('#ro').innerHTML = s;

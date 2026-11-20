@@ -11,6 +11,7 @@ export const st = {
   BUF: [], // AudioContext, output chain, analyser, per-voice {n,a} buffers
   playing: false,
   shownT: -1, // step currently shown as playing
+  shownKh: 0, // khali depth of that step (0 outside, 1 edge, 2 middle)
 };
 // Scheduled steps waiting to be displayed, and the recent displayed steps for the gravity meter.
 export const queue = [],

@@ -12,10 +12,52 @@ export function newState() {
     cool: 0,
     log: '',
     flash: 0,
+    emptied: 0,
+    // Khali clock: position in the current pass and the pass length. Starts at a random point.
+    khPass: khaliPass(),
+    khPos: Math.floor(Math.random() * 19),
+    kh: 0,
   };
 }
 
-// Advance one step: return the events {v,s} to play and, if the guard is on, rotate a voice
+// The khali comes round once per pass. Each pass length is drawn from 19-37, skipping multiples
+// of 4, so the empty region never settles onto the beat or bar grid.
+export function khaliPass() {
+  let L;
+  do L = 19 + Math.floor(Math.random() * 19);
+  while (L % 4 === 0);
+  return L;
+}
+const BREATH = VO.findIndex((v) => v.fn === 'breath');
+
+// How deep the clock is in the khali: 0 outside, 1 on its edge steps, 2 in the middle.
+export function khaliDepth(S, p) {
+  const k = p.khali;
+  if (!k || !k.on || S.khPos >= k.w) return 0;
+  return S.khPos === 0 || S.khPos === k.w - 1 ? 1 : 2;
+}
+
+// Thin the events inside the khali. Every stroke drops one level (dum to tak, tak to ghost) and
+// loses its accent; on the edge steps only dums drop. Breath swells instead: its ghosts play as tak.
+function khali(S, p, ev) {
+  const d = khaliDepth(S, p);
+  S.kh = d;
+  if (!d) return;
+  ev.forEach((e) => {
+    if (e.v === BREATH) {
+      if (d === 2 && e.s === 1 && e.k > 0) e.s = 2;
+      return;
+    }
+    const s0 = e.s,
+      a0 = e.a;
+    if (e.s === 3) e.s = 2;
+    else if (e.s === 2 && d === 2) e.s = 1;
+    e.a = 0;
+    if (e.s !== s0 || a0) S.emptied++;
+  });
+}
+
+// Advance one step: return the events {v,s,a,k} to play and, if the guard is on, rotate a voice
 // away from any 4-step (beat) or 8-step (bar) pulse that is forming. Mutates p.voices[].rot.
 export function advance(S, p) {
   const ev = [];
@@ -27,9 +69,10 @@ export function advance(S, p) {
     if (idx === 0) starts++;
     let s = v.steps[idx];
     if (idx === 0 && s > 1) s = 1;
-    if (s > 0) ev.push({v: i, s, a: v.acc ? v.acc[idx] : 0});
+    if (s > 0) ev.push({v: i, s, a: v.acc ? v.acc[idx] : 0, k: idx});
   }
   if (starts >= 2) S.align++;
+  khali(S, p, ev);
   const acc = ev.filter((e) => e.s === 3);
   if (acc.length > 1) {
     S.unstack++;
@@ -52,8 +95,7 @@ export function advance(S, p) {
     const win = S.hist.slice(-64),
       thr = p.guard === 2 ? [1.6, 1.9] : [1.8, 2.15];
     if (win.filter((h) => h.E > 0).length < 10) {
-      S.t++;
-      S.cool--;
+      tickClock(S);
       return ev;
     }
     for (const [pi, P] of [
@@ -86,9 +128,17 @@ export function advance(S, p) {
       }
     }
   }
+  tickClock(S);
+  return ev;
+}
+
+function tickClock(S) {
   S.t++;
   S.cool--;
-  return ev;
+  if (++S.khPos >= S.khPass) {
+    S.khPos = 0;
+    S.khPass = khaliPass();
+  }
 }
 
 // Seconds per 16th step; on Absolute the clock drifts.

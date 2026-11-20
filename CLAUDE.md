@@ -55,6 +55,7 @@ Rhythms store voices by position. Add a new voice at the end of `VO`, give every
   - The guard has no off switch.
 - New guard behaviour must run identically in live play and export, so put it in `guard.js`, not in the UI.
 - Step states: 0 off, 1 ghost (closed sound, quiet), 2 tak (closed sound), 3 dum (open sound, its own buffer). Accent is a separate flag per step (`acc`, 0 or 1) that only tak or dum can carry; it has its own `accent` overrides per voice. Each voice's `open`, `closed` and `accent` overrides sit in its `VO` entry in `constants.js`; `vParams()` applies them. Shift-click or long-press toggles an accent.
+- Khali: `advance()` in `guard.js` thins events inside a moving region of the shared clock, before the guard sums energy. Each pass is 19-37 steps (no multiples of 4), redrawn every pass; the region is the first `khali.w` steps (4-10). Edge steps only drop dums to tak; middle steps also drop tak to ghost; accents go. Breath is exempt and swells instead (ghost to tak, never on its first step). Rhythms store `khali: {on, w}`; old saves load with it off. Sparse orbit has it on.
 - Saved rhythms go through `sanitize()`. When you add a field to the rhythm model, add it there too, or old saves and imports will drop it.
 - After editing, run `npm run format`.
 
@@ -66,7 +67,7 @@ Rhythms store voices by position. Add a new voice at the end of `VO`, give every
 
 ## To do
 
-- Add the khali region (see Design direction).
+- Tune the khali by ear (width, pass range, how far strokes drop).
 
 ## Design direction
 
