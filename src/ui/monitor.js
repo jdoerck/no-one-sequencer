@@ -37,8 +37,8 @@ function draw() {
     const v = pat.voices[i],
       rr = R0 - i * ring,
       idx = shownT < 0 ? -1 : stepIdx(v, shownT);
-    // Inside the khali every ring but Breath's dims; Breath swells.
-    const dim = vo.fn === 'breath' ? 1 : [1, 0.65, 0.35][st.shownKh];
+    // Inside the khali every ring dims.
+    const dim = [1, 0.65, 0.35][st.shownKh];
     x.globalAlpha = (v.mute ? 0.25 : 1) * dim;
     for (let k = 0; k < v.len; k++) {
       const a0 = -Math.PI / 2 + (k / v.len) * TAU,

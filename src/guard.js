@@ -17,6 +17,7 @@ export function newState() {
     khPass: khaliPass(),
     khPos: Math.floor(Math.random() * 19),
     kh: 0,
+    khRest: 0,
   };
 }
 
@@ -28,37 +29,30 @@ export function khaliPass() {
   while (L % 4 === 0);
   return L;
 }
-const BREATH = VO.findIndex((v) => v.fn === 'breath');
-
-// How deep the clock is in the khali: 0 outside, 1 on its edge steps, 2 in the middle.
+// Whether the clock is inside the khali: 0 outside, 2 inside.
 export function khaliDepth(S, p) {
   const k = p.khali;
-  if (!k || !k.on || S.khPos >= k.w) return 0;
-  return S.khPos === 0 || S.khPos === k.w - 1 ? 1 : 2;
+  return k && k.on && S.khPos < k.w ? 2 : 0;
 }
 
-// Thin the events inside the khali. On the edge steps every stroke drops one level (dum to tak,
-// tak to ghost); in the middle every stroke falls to a ghost and ghosts fall silent. Accents go.
-// Breath swells instead: in the middle its strokes play as accented tak (never on its first step).
+// Inside the khali only ghosts play. Every stroke falls to a ghost and loses its accent, and each
+// ghost gets its step and the next one to itself: other strokes on its step and everything on the
+// step after are dropped. That rest also holds when the step after is past the end of the khali.
 function khali(S, p, ev) {
   const d = khaliDepth(S, p);
   S.kh = d;
-  if (!d) return ev;
-  return ev.filter((e) => {
-    if (e.v === BREATH) {
-      if (d === 2 && e.k > 0) {
-        e.s = Math.max(e.s, 2);
-        e.a = 1;
-      }
-      return true;
-    }
-    const s0 = e.s,
-      a0 = e.a;
-    e.s = d === 1 ? Math.max(1, e.s - 1) : e.s - 1;
-    e.a = 0;
-    if (e.s !== s0 || a0) S.emptied++;
-    return e.s > 0;
+  if (S.khRest) {
+    S.khRest = 0;
+    S.emptied += ev.length;
+    return [];
+  }
+  if (!d || !ev.length) return ev;
+  ev.forEach((e) => {
+    if (e.s > 1 || e.a) S.emptied++;
   });
+  S.emptied += ev.length - 1;
+  S.khRest = 1;
+  return [{...ev[0], s: 1, a: 0}];
 }
 
 // Advance one step: return the events {v,s,a,k} to play and, if the guard is on, rotate a voice
