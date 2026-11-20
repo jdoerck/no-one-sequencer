@@ -110,7 +110,7 @@ export const GUARDS = ['Gentle', 'Strict', 'Absolute'];
 // Khali width range in steps, and the rule text shown when it is on.
 export const KHALI_W = [4, 10];
 export const KHALI_RULE =
-  'Khali: a moving empty region where every stroke drops one level and accents fall away, while Breath swells.';
+  'Khali: a moving empty region where strokes fall to ghosts, ghosts fall silent and accents fall away, while Breath swells.';
 // [minimum guard level, rule text]
 export const RULES = [
   [0, 'The first step of every loop can only whisper (ghost notes only).'],

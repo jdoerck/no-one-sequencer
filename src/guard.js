@@ -20,11 +20,11 @@ export function newState() {
   };
 }
 
-// The khali comes round once per pass. Each pass length is drawn from 19-37, skipping multiples
+// The khali comes round once per pass. Each pass length is drawn from 15-29, skipping multiples
 // of 4, so the empty region never settles onto the beat or bar grid.
 export function khaliPass() {
   let L;
-  do L = 19 + Math.floor(Math.random() * 19);
+  do L = 15 + Math.floor(Math.random() * 15);
   while (L % 4 === 0);
   return L;
 }
@@ -37,30 +37,34 @@ export function khaliDepth(S, p) {
   return S.khPos === 0 || S.khPos === k.w - 1 ? 1 : 2;
 }
 
-// Thin the events inside the khali. Every stroke drops one level (dum to tak, tak to ghost) and
-// loses its accent; on the edge steps only dums drop. Breath swells instead: its ghosts play as tak.
+// Thin the events inside the khali. On the edge steps every stroke drops one level (dum to tak,
+// tak to ghost); in the middle every stroke falls to a ghost and ghosts fall silent. Accents go.
+// Breath swells instead: in the middle its strokes play as accented tak (never on its first step).
 function khali(S, p, ev) {
   const d = khaliDepth(S, p);
   S.kh = d;
-  if (!d) return;
-  ev.forEach((e) => {
+  if (!d) return ev;
+  return ev.filter((e) => {
     if (e.v === BREATH) {
-      if (d === 2 && e.s === 1 && e.k > 0) e.s = 2;
-      return;
+      if (d === 2 && e.k > 0) {
+        e.s = Math.max(e.s, 2);
+        e.a = 1;
+      }
+      return true;
     }
     const s0 = e.s,
       a0 = e.a;
-    if (e.s === 3) e.s = 2;
-    else if (e.s === 2 && d === 2) e.s = 1;
+    e.s = d === 1 ? Math.max(1, e.s - 1) : e.s - 1;
     e.a = 0;
     if (e.s !== s0 || a0) S.emptied++;
+    return e.s > 0;
   });
 }
 
 // Advance one step: return the events {v,s,a,k} to play and, if the guard is on, rotate a voice
 // away from any 4-step (beat) or 8-step (bar) pulse that is forming. Mutates p.voices[].rot.
 export function advance(S, p) {
-  const ev = [];
+  let ev = [];
   let starts = 0;
   for (let i = 0; i < NV; i++) {
     const v = p.voices[i];
@@ -72,7 +76,7 @@ export function advance(S, p) {
     if (s > 0) ev.push({v: i, s, a: v.acc ? v.acc[idx] : 0, k: idx});
   }
   if (starts >= 2) S.align++;
-  khali(S, p, ev);
+  ev = khali(S, p, ev);
   const acc = ev.filter((e) => e.s === 3);
   if (acc.length > 1) {
     S.unstack++;
