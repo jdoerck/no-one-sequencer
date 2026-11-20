@@ -1,6 +1,6 @@
 // Live audio engine: renders voice buffers and plays hits through the output chain.
 import {V} from '../dsp/voices.js';
-import {VO, AMP} from '../model/constants.js';
+import {VO, AMP, KHALI_HP} from '../model/constants.js';
 import {chain} from './chain.js';
 import {st} from '../state.js';
 import {toast} from '../lib/dom.js';
@@ -70,14 +70,22 @@ export function ensure() {
 
 // Schedule one hit of voice i at step state s (1-3) at time t, accented if a is set.
 // Dum (3) uses the open buffer, the rest closed; ghosts (1) are never accented.
-export function hit(ctx, ch, bufs, p, i, s, t, a) {
+// hp (inside the khali) high-passes the hit so only the bass voices' absence is left down low.
+export function hit(ctx, ch, bufs, p, i, s, t, a, hp) {
   const src = ctx.createBufferSource();
   src.buffer = bufs[i][(s === 3 ? 'open' : 'closed') + (a && s > 1 ? 'A' : '')];
   const g = ctx.createGain(),
     sg = ctx.createGain();
   g.gain.value = p.voices[i].level * AMP[s];
   sg.gain.value = VO[i].send;
-  src.connect(g);
+  if (hp) {
+    const f = ctx.createBiquadFilter();
+    f.type = 'highpass';
+    f.frequency.value = KHALI_HP;
+    f.Q.value = 0.7;
+    src.connect(f);
+    f.connect(g);
+  } else src.connect(g);
   g.connect(ch.dry);
   g.connect(sg);
   sg.connect(ch.send);

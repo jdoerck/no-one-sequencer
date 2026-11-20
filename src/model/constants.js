@@ -111,8 +111,10 @@ export const GUARDS = ['Gentle', 'Strict', 'Absolute'];
 export const KHALI_W = [15, 40];
 // Steps of complete silence that open every khali when its hole option is on.
 export const KHALI_HOLE = 3;
+// High-pass cutoff (Hz) on the non-bass voices inside the khali.
+export const KHALI_HP = 350;
 export const KHALI_RULE =
-  'Khali: in a moving section of the cycle the bass closes. Pulse and Drop fall to ghosts while the other voices play on.';
+  'Khali: in a moving section of the cycle the bass closes. Pulse and Drop fall to ghosts while the other voices play on with their low end cut.';
 // [minimum guard level, rule text]
 export const RULES = [
   [0, 'The first step of every loop can only whisper (ghost notes only).'],

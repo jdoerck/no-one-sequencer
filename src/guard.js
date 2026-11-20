@@ -50,6 +50,8 @@ function khali(S, p, ev) {
     return [];
   }
   ev.forEach((e) => {
+    // The voices that keep playing lose their low end too (high-passed in hit()).
+    if (!BASS[e.v]) e.hp = 1;
     if (!BASS[e.v] || (e.s < 2 && !e.a)) return;
     e.s = 1;
     e.a = 0;
@@ -58,7 +60,7 @@ function khali(S, p, ev) {
   return ev;
 }
 
-// Advance one step: return the events {v,s,a,k} to play and, if the guard is on, rotate a voice
+// Advance one step: return the events {v,s,a,k,hp} to play and, if the guard is on, rotate a voice
 // away from any 4-step (beat) or 8-step (bar) pulse that is forming. Mutates p.voices[].rot.
 export function advance(S, p) {
   let ev = [];
