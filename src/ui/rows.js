@@ -17,6 +17,18 @@ const edited = () => {
 // Position of voice v at global step t, accounting for rotation.
 export const stepIdx = (v, t) => (((t + v.rot) % v.len) + v.len) % v.len;
 
+// Accent is a flag on a tak or dum step; ghosts and off steps cannot take it.
+function toggleAccent(i, k) {
+  const v = st.pat.voices[i];
+  if (v.steps[k] < 2) {
+    toast('Only tak and dum can be accented');
+    return;
+  }
+  v.acc[k] = v.acc[k] ? 0 : 1;
+  edited();
+  if (v.acc[k] && !st.playing && ensure()) audition(i, v.steps[k], true);
+}
+
 export function buildRows() {
   const R = $('#rows');
   R.innerHTML = '';
@@ -40,14 +52,33 @@ export function buildRows() {
       c.type = 'button';
       c.className = 'cell' + (k === 0 ? ' first' : '');
       // Cycle off -> tak -> dum -> ghost; the first step only toggles off <-> ghost.
-      c.addEventListener('click', () => {
+      // A long press (touch) or Shift-click toggles the accent; a long press also suppresses its click.
+      let press = 0,
+        held = false;
+      c.addEventListener('pointerdown', () => {
+        held = false;
+        press = setTimeout(() => {
+          held = true;
+          toggleAccent(i, k);
+        }, 400);
+      });
+      ['pointerup', 'pointerleave', 'pointercancel'].forEach((ev) =>
+        c.addEventListener(ev, () => clearTimeout(press)),
+      );
+      c.addEventListener('click', (e) => {
+        if (held) {
+          held = false;
+          return;
+        }
+        if (e.shiftKey) return toggleAccent(i, k);
         const v = st.pat.voices[i];
         const order = k === 0 ? [0, 1] : [0, 2, 3, 1];
         const cur = v.steps[k];
         v.steps[k] = order[(order.indexOf(cur) + 1) % order.length];
+        if (v.steps[k] < 2) v.acc[k] = 0;
         if (k === 0 && cur === 0) toast('The first step of a loop can only whisper');
         edited();
-        if (v.steps[k] && !st.playing && ensure()) audition(i, v.steps[k]);
+        if (v.steps[k] && !st.playing && ensure()) audition(i, v.steps[k], !!v.acc[k]);
       });
       cells.append(c);
       cs.push(c);
@@ -103,10 +134,11 @@ export function syncRows() {
     const v = pat.voices[i];
     cs.forEach((c, k) => {
       c.classList.toggle('gone', k >= v.len);
+      c.classList.toggle('acc', !!v.acc[k]);
       c.dataset.s = v.steps[k];
       c.setAttribute(
         'aria-label',
-        `${VO[i].n} step ${k + 1}: ${['off', 'ghost', 'tak', 'dum'][v.steps[k]]}`,
+        `${VO[i].n} step ${k + 1}: ${['off', 'ghost', 'tak', 'dum'][v.steps[k]]}${v.acc[k] ? ', accented' : ''}`,
       );
     });
     sel.value = v.len;

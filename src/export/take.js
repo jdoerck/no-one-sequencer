@@ -25,7 +25,7 @@ async function exportTake() {
     let t = 0.02;
     while (t < secs) {
       const ev = advance(St, p);
-      ev.forEach((e) => hit(oc, ch, bufs, p, e.v, e.s, t));
+      ev.forEach((e) => hit(oc, ch, bufs, p, e.v, e.s, t, e.a));
       t += stepDur(St, p);
     }
     const out = await oc.startRendering(),

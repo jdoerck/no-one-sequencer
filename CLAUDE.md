@@ -54,7 +54,7 @@ Rhythms store voices by position. Add a new voice at the end of `VO`, give every
   - Bar-making lengths (2, 4, 8, 12, 16) are never offered.
   - The guard has no off switch.
 - New guard behaviour must run identically in live play and export, so put it in `guard.js`, not in the UI.
-- Step states: 0 off, 1 ghost (closed sound, quiet), 2 tak (closed sound), 3 dum (open sound, its own buffer). Each voice's `open` and `closed` overrides sit in its `VO` entry in `constants.js`; `vParams()` applies them.
+- Step states: 0 off, 1 ghost (closed sound, quiet), 2 tak (closed sound), 3 dum (open sound, its own buffer). Accent is a separate flag per step (`acc`, 0 or 1) that only tak or dum can carry; it has its own `accent` overrides per voice. Each voice's `open`, `closed` and `accent` overrides sit in its `VO` entry in `constants.js`; `vParams()` applies them. Shift-click or long-press toggles an accent.
 - Saved rhythms go through `sanitize()`. When you add a field to the rhythm model, add it there too, or old saves and imports will drop it.
 - After editing, run `npm run format`.
 

@@ -7,7 +7,7 @@ import {toast} from '../lib/dom.js';
 
 // Voice params with the rhythm's tune (semitones) and decay multiplier applied, then the stroke's overrides.
 // stroke is 'open' (dum), 'closed' (tak) or undefined for the base voice.
-export function vParams(i, p, stroke) {
+export function vParams(i, p, stroke, accent) {
   const vo = VO[i],
     v = p.voices[i],
     P = Object.assign({}, vo.P),
@@ -19,6 +19,11 @@ export function vParams(i, p, stroke) {
     for (const k in ov.m) P[k] *= ov.m[k];
     Object.assign(P, ov.s);
   }
+  if (accent) {
+    const ac = vo.accent;
+    for (const k in ac.m) P[k] *= ac.m[k];
+    Object.assign(P, ac.s);
+  }
   return P;
 }
 const toBuf = (ctx, d) => {
@@ -26,12 +31,15 @@ const toBuf = (ctx, d) => {
   b.getChannelData(0).set(d);
   return b;
 };
-// Closed (tak) and open (dum) buffer per voice.
+// Four buffers per voice: closed (tak), open (dum), and each again with the accent layer.
 const renderVoice = (ctx, p, i) => {
-  const fn = V[VO[i].fn];
+  const fn = V[VO[i].fn],
+    buf = (stroke, accent) => toBuf(ctx, fn(vParams(i, p, stroke, accent), ctx.sampleRate));
   return {
-    closed: toBuf(ctx, fn(vParams(i, p, 'closed'), ctx.sampleRate)),
-    open: toBuf(ctx, fn(vParams(i, p, 'open'), ctx.sampleRate)),
+    closed: buf('closed', false),
+    open: buf('open', false),
+    closedA: buf('closed', true),
+    openA: buf('open', true),
   };
 };
 export function makeBufs(ctx, p) {
@@ -60,10 +68,11 @@ export function ensure() {
   return true;
 }
 
-// Schedule one hit of voice i at step state s (1-3) at time t. Dum (3) uses the open buffer, the rest closed.
-export function hit(ctx, ch, bufs, p, i, s, t) {
+// Schedule one hit of voice i at step state s (1-3) at time t, accented if a is set.
+// Dum (3) uses the open buffer, the rest closed; ghosts (1) are never accented.
+export function hit(ctx, ch, bufs, p, i, s, t, a) {
   const src = ctx.createBufferSource();
-  src.buffer = s === 3 ? bufs[i].open : bufs[i].closed;
+  src.buffer = bufs[i][(s === 3 ? 'open' : 'closed') + (a && s > 1 ? 'A' : '')];
   const g = ctx.createGain(),
     sg = ctx.createGain();
   g.gain.value = p.voices[i].level * AMP[s];
@@ -75,7 +84,8 @@ export function hit(ctx, ch, bufs, p, i, s, t) {
   src.start(t);
 }
 // Audition voice i now.
-export const audition = (i, s = 2) => hit(st.AC, st.CH, st.BUF, st.pat, i, s, st.AC.currentTime + 0.01);
+export const audition = (i, s = 2, a = false) =>
+  hit(st.AC, st.CH, st.BUF, st.pat, i, s, st.AC.currentTime + 0.01, a);
 
 // Re-render one voice after a tune/decay change (debounced), auditioning it when stopped.
 const reT = [];

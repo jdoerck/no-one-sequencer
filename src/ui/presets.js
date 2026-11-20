@@ -71,6 +71,7 @@ function generate() {
     return {
       len: L,
       steps,
+      acc: Array(16).fill(0),
       rot: 0,
       mute: 0,
       level: VO[i].mix.level,
@@ -99,6 +100,7 @@ function tempt() {
     v.rot = 0;
     v.mute = 0;
     v.steps = [...TEMPT_STEPS[i], ...Array(10).fill(0)];
+    v.acc = Array(16).fill(0);
   });
   pat.name = 'Your rhythm';
   syncRows();

@@ -27,7 +27,7 @@ export function advance(S, p) {
     if (idx === 0) starts++;
     let s = v.steps[idx];
     if (idx === 0 && s > 1) s = 1;
-    if (s > 0) ev.push({v: i, s});
+    if (s > 0) ev.push({v: i, s, a: v.acc ? v.acc[idx] : 0});
   }
   if (starts >= 2) S.align++;
   const acc = ev.filter((e) => e.s === 3);
@@ -35,6 +35,10 @@ export function advance(S, p) {
     S.unstack++;
     acc.forEach((e) => (e.s = 2));
   }
+  // Accents never stack either: only the first of several accented strokes keeps its accent.
+  ev.filter((e) => e.a && e.s > 1)
+    .slice(1)
+    .forEach((e) => (e.a = 0));
   const contrib = new Float32Array(NV);
   let E = 0;
   ev.forEach((e) => {

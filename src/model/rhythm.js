@@ -1,14 +1,16 @@
 // Rhythm data: preset patterns, validation of loaded JSON, and localStorage persistence.
 import {LENS, NV, VO, FX, TEMPO} from './constants.js';
 
-// Step string: '.' off, 'g' ghost, 'x' hit, 'X' accent. The first step is clamped to ghost.
+// Step string: '.' off, 'g' ghost, 'x' tak, 'X' dum, 'A' accented tak, 'D' accented dum.
+// The first step is clamped to ghost. Returns the steps (0-3) and the accent flags (0/1).
 export const parse = (s) => {
-  const a = [...s].map((c) => (c === 'g' ? 1 : c === 'x' ? 2 : c === 'X' ? 3 : 0));
-  if (a[0] > 1) a[0] = 1;
-  while (a.length < 16) a.push(0);
-  return a.slice(0, 16);
+  const code = {g: [1, 0], x: [2, 0], X: [3, 0], A: [2, 1], D: [3, 1]};
+  const a = [...s].map((c) => code[c] || [0, 0]).slice(0, 16);
+  while (a.length < 16) a.push([0, 0]);
+  if (a[0][0] > 1) a[0] = [1, 0];
+  return {steps: a.map((c) => c[0]), acc: a.map((c) => c[1])};
 };
-export const mkv = (len, str, o) => Object.assign({len, steps: parse(str), rot: 0, mute: 0}, o || {});
+export const mkv = (len, str, o) => Object.assign({len, ...parse(str), rot: 0, mute: 0}, o || {});
 // Voices take their default level/tune/decay from VO unless the preset overrides them.
 const R = (name, tempo, guard, vs) => ({
   name,
@@ -81,9 +83,12 @@ export function sanitize(o) {
         if (k === 0 && s > 1) s = 1;
         return s;
       });
+      // An accent only sits on a tak or dum step.
+      const acc = steps.map((s, k) => (s > 1 && v.acc && v.acc[k] ? 1 : 0));
       return {
         len,
         steps,
+        acc,
         rot: Math.round(n(v.rot, -999, 999, 0)),
         mute: v.mute ? 1 : 0,
         level: n(v.level, 0, 1, d.level),
