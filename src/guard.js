@@ -1,6 +1,6 @@
 // The downbeat guard and step clock. Shared by live play and offline export.
 import {TAU} from './dsp/util.js';
-import {VO, WGT, NV} from './model/constants.js';
+import {VO, WGT, NV, KHALI_HOLE} from './model/constants.js';
 
 export function newState() {
   return {
@@ -35,13 +35,14 @@ export function khaliDepth(S, p) {
   return k && k.on && S.khPos < k.w ? 2 : 0;
 }
 
-// Inside the khali only ghosts play. Every stroke falls to a ghost and loses its accent, and each
-// ghost gets its step and the next one to itself: other strokes on its step and everything on the
-// step after are dropped. That rest also holds when the step after is past the end of the khali.
+// The khali opens with KHALI_HOLE steps where nothing plays at all. For the rest of its width only
+// ghosts play: every stroke falls to a ghost and loses its accent, and each ghost gets its step and
+// the next one to itself (other strokes on its step and everything on the step after are dropped,
+// even when the step after is past the end of the khali).
 function khali(S, p, ev) {
   const d = khaliDepth(S, p);
   S.kh = d;
-  if (S.khRest) {
+  if (S.khRest || (d && S.khPos < KHALI_HOLE)) {
     S.khRest = 0;
     S.emptied += ev.length;
     return [];
