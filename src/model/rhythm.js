@@ -1,5 +1,5 @@
 // Rhythm data: preset patterns, validation of loaded JSON, and localStorage persistence.
-import {LENS, NV} from './constants.js';
+import {LENS, NV, VO, FX, TEMPO} from './constants.js';
 
 // Step string: '.' off, 'g' ghost, 'x' hit, 'X' accent. The first step is clamped to ghost.
 export const parse = (s) => {
@@ -8,52 +8,52 @@ export const parse = (s) => {
   while (a.length < 16) a.push(0);
   return a.slice(0, 16);
 };
-export const mkv = (len, str, o) =>
-  Object.assign({len, steps: parse(str), rot: 0, mute: 0, level: 0.8, tune: 0, decay: 1}, o || {});
+export const mkv = (len, str, o) => Object.assign({len, steps: parse(str), rot: 0, mute: 0}, o || {});
+// Voices take their default level/tune/decay from VO unless the preset overrides them.
 const R = (name, tempo, guard, vs) => ({
   name,
   tempo,
   guard,
-  voices: vs,
-  fx: {spring: 0.3, decay: 2, stone: 0.35, drive: 0.25, hiss: 0.08, master: 0.9},
+  voices: vs.map((v, i) => Object.assign({}, VO[i].mix, v)),
+  fx: {...FX},
 });
 
 export const PRESETS = [
-  R('Seven against nine', 96, 1, [
+  R('Seven against nine', TEMPO, 1, [
     mkv(7, '.x...x.'),
-    mkv(9, '...g..x..', {level: 0.6}),
+    mkv(9, '...g..x..'),
     mkv(5, '..X..'),
-    mkv(11, '.....x....g', {level: 0.55}),
-    mkv(3, '.xg', {level: 0.5}),
-    mkv(13, '........X....', {level: 0.45}),
-    mkv(10, '..g....x..', {level: 0.4}),
+    mkv(11, '.....x....g'),
+    mkv(3, '.xg'),
+    mkv(13, '........X....'),
+    mkv(10, '..g....x..'),
   ]),
   R('Prime field', 112, 1, [
     mkv(5, '.x..x'),
-    mkv(13, '..x.....x..g.', {level: 0.6}),
+    mkv(13, '..x.....x..g.'),
     mkv(11, '....X......'),
     mkv(7, '......x', {mute: 1}),
-    mkv(5, 'gx.xx', {level: 0.45}),
-    mkv(3, '..x', {level: 0.35}),
-    mkv(9, '...x...g.', {level: 0.35}),
+    mkv(5, 'gx.xx'),
+    mkv(3, '..x'),
+    mkv(9, '...x...g.'),
   ]),
   R('Lopsided', 84, 2, [
     mkv(9, '..x....x.'),
-    mkv(10, '.g...x...g', {level: 0.6}),
+    mkv(10, '.g...x...g'),
     mkv(7, '...X...'),
-    mkv(14, '.........x...g', {level: 0.5}),
-    mkv(6, '.xgxg.', {level: 0.45}),
-    mkv(15, '.....X.........', {level: 0.4}),
-    mkv(11, '.....g..x..', {level: 0.4}),
+    mkv(14, '.........x...g'),
+    mkv(6, '.xgxg.'),
+    mkv(15, '.....X.........'),
+    mkv(11, '.....g..x..'),
   ]),
   R('Sparse orbit', 70, 1, [
     mkv(11, '....x......'),
-    mkv(15, '..........x....', {level: 0.55}),
+    mkv(15, '..........x....'),
     mkv(13, '.......X.....'),
-    mkv(9, '..g......', {level: 0.4}),
-    mkv(7, '.x..x.g', {level: 0.35}),
-    mkv(5, '...X.', {level: 0.5}),
-    mkv(14, '......x......g', {level: 0.45}),
+    mkv(9, '..g......'),
+    mkv(7, '.x..x.g'),
+    mkv(5, '...X.'),
+    mkv(14, '......x......g'),
   ]),
 ];
 
@@ -68,7 +68,7 @@ export function sanitize(o) {
     return isFinite(v) ? Math.max(a, Math.min(b, v)) : d;
   };
   if (o.name) p.name = String(o.name).slice(0, 40);
-  p.tempo = Math.round(n(o.tempo, 50, 170, 96));
+  p.tempo = Math.round(n(o.tempo, 50, 170, TEMPO));
   p.guard = Math.round(n(o.guard, 0, 2, 1));
   // Rhythms saved before Breath was added have 6 voices; the missing ones take preset 0's defaults.
   if (Array.isArray(o.voices) && o.voices.length >= 6 && o.voices.length <= NV)
@@ -86,9 +86,9 @@ export function sanitize(o) {
         steps,
         rot: Math.round(n(v.rot, -999, 999, 0)),
         mute: v.mute ? 1 : 0,
-        level: n(v.level, 0, 1, 0.8),
-        tune: Math.round(n(v.tune, -12, 12, 0)),
-        decay: n(v.decay, 0.3, 3, 1),
+        level: n(v.level, 0, 1, d.level),
+        tune: Math.round(n(v.tune, -12, 12, d.tune)),
+        decay: n(v.decay, 0.3, 3, d.decay),
       };
     });
   if (o.fx)

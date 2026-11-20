@@ -73,7 +73,7 @@ function generate() {
       steps,
       rot: 0,
       mute: 0,
-      level: [0.85, 0.6, 0.75, 0.55, 0.45, 0.45, 0.4][i],
+      level: VO[i].mix.level,
       tune: pat.voices[i].tune,
       decay: pat.voices[i].decay,
     };

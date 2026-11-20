@@ -1,10 +1,11 @@
-// Static configuration: the six voices, allowed loop lengths, step levels, guard levels and rules.
+// Static configuration: the voices, allowed loop lengths, step levels, guard levels and rules.
 
-// Each voice: display name, circuit fn, default component values, which params tune (tk) and decay (dk) scale,
+// Each voice: display name, default level/tune/decay (mix), circuit fn, default component values, which params tune (tk) and decay (dk) scale,
 // weight in the guard's pulse detector (w), and reverb send.
 export const VO = [
   {
     n: 'Pulse',
+    mix: {level: 0.78, tune: 0, decay: 0.56},
     fn: 'pulse',
     P: {rT: 47000, cT: 4.7e-8, rD: 470000, cD: 1e-6, rP: 10000, cP: 1e-6, sweep: 2, drive: 0.3, click: 0.3},
     tk: ['rT'],
@@ -14,6 +15,7 @@ export const VO = [
   },
   {
     n: 'Drop',
+    mix: {level: 0.38, tune: 0, decay: 0.62},
     fn: 'drop',
     P: {rT: 68000, cT: 2.2e-8, rD: 220000, cD: 1e-6, drop: 0.8, noise: 0.2},
     tk: ['rT'],
@@ -23,6 +25,7 @@ export const VO = [
   },
   {
     n: 'Tak',
+    mix: {level: 0.21, tune: 0, decay: 0.3},
     fn: 'tak',
     P: {rT: 33000, cT: 2.2e-8, rD: 47000, cD: 2.2e-6, rF: 6800, cF: 1e-8, rS: 100000, cS: 2.2e-6, tone: 0.5},
     tk: ['rT', 'rF'],
@@ -32,6 +35,7 @@ export const VO = [
   },
   {
     n: 'Tali',
+    mix: {level: 0.55, tune: 6, decay: 0.3},
     fn: 'tali',
     P: {rF: 10000, cF: 1.5e-8, rB: 15000, cB: 1e-6, rD: 100000, cD: 2.2e-6, n: 4},
     tk: ['rF'],
@@ -41,6 +45,7 @@ export const VO = [
   },
   {
     n: 'Tick',
+    mix: {level: 0.45, tune: 0, decay: 0.3},
     fn: 'tick',
     P: {rM: 33000, cM: 1e-8, rB: 10000, cB: 2.2e-9, rC: 22000, cC: 1e-6},
     tk: ['rM', 'rB'],
@@ -50,6 +55,7 @@ export const VO = [
   },
   {
     n: 'Bell',
+    mix: {level: 0.23, tune: 0, decay: 0.3},
     fn: 'bell',
     P: {rA: 22000, cA: 1e-8, rB: 39000, cB: 1e-8, rD: 150000, cD: 1e-6},
     tk: ['rA', 'rB'],
@@ -59,6 +65,7 @@ export const VO = [
   },
   {
     n: 'Breath',
+    mix: {level: 0.25, tune: 0, decay: 0.35},
     fn: 'breath',
     P: {rF: 8200, cF: 1e-8, rA: 27000, cA: 2.2e-6, rD: 100000, cD: 3.3e-6},
     tk: ['rF'],
@@ -67,6 +74,9 @@ export const VO = [
     send: 0.4,
   },
 ];
+// Default output stage and tempo for new and preset rhythms.
+export const FX = {spring: 0.3, decay: 2, stone: 0.35, drive: 0.01, hiss: 0.08, master: 0.9};
+export const TEMPO = 87;
 // Number of voices. Rhythms store voices by position, so new voices go at the end.
 export const NV = VO.length;
 
