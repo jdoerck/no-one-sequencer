@@ -62,7 +62,7 @@ export const PRESETS = [
       mkv(5, '...X.'),
       mkv(14, '......x......g'),
     ],
-    {on: 1, w: 6},
+    {on: 1, w: 25, hole: 0},
   ),
 ];
 
