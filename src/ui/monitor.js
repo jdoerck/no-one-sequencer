@@ -8,25 +8,11 @@ import {dissolvedText} from './guard.js';
 
 const IDLE =
   'Press Play. Each ring is a loop of its own length; the bars on the right show whether a steady pulse is forming.';
-let mc,
-  waveOn = false;
-
-// Sweep the khali shadow in when the khali starts and out when it ends.
-function wave(on) {
-  if (on === waveOn) return;
-  waveOn = on;
-  const w = $('#wave');
-  if (on) {
-    w.className = '';
-    void w.offsetWidth; // restart from the left edge
-    w.className = 'in';
-  } else w.className = 'out';
-}
+let mc;
 
 function draw() {
   requestAnimationFrame(draw);
   showNow();
-  wave(st.playing && st.shownKh > 0);
   const pat = st.pat,
     S = st.S,
     shownT = st.shownT;
