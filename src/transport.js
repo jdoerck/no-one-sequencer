@@ -6,6 +6,11 @@ import {syncRows, showNow} from './ui/rows.js';
 import {saveSoon} from './ui/persist.js';
 import {$} from './lib/dom.js';
 
+// Start and Stop are one key: the icon and label always name the next action.
+const START =
+    '<svg class="ico" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5L12 7L3 12.5Z"/></svg>Start',
+  STOP =
+    '<svg class="ico" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="2.5" y="2.5" width="9" height="9"/></svg>Stop';
 let nextT = 0,
   timer = null;
 function tick() {
@@ -28,7 +33,7 @@ export function setPlay(on) {
   if (on && !ensure()) return;
   st.playing = on;
   $('#play').setAttribute('aria-pressed', String(on));
-  $('#play').textContent = on ? 'Stop' : 'Play';
+  $('#play').innerHTML = on ? STOP : START;
   if (on) {
     st.S = newState();
     nextT = st.AC.currentTime + 0.06;

@@ -5,34 +5,21 @@ import {VO, LENS} from '../model/constants.js';
 import {PRESETS, clone} from '../model/rhythm.js';
 import {makeBufs, fxOf} from '../audio/engine.js';
 import {syncRows} from './rows.js';
-import {voiceBinds} from './voices.js';
 import {saveSoon} from './persist.js';
 import {setPlay} from '../transport.js';
 
-const ps = () => $('#preset');
+let patNo = -1;
 
-// Select the matching preset, or a "Your rhythm" entry when the rhythm has been edited.
+// Show the matching preset's number on the LCD, or -- when the rhythm has been edited.
 export function markPreset() {
-  const s = JSON.stringify(st.pat),
-    i = PRESETS.findIndex((p) => JSON.stringify(p) === s);
-  if (i >= 0) {
-    ps().value = i;
-    return;
-  }
-  if (!$('#custom')) {
-    const o = document.createElement('option');
-    o.value = '';
-    o.id = 'custom';
-    o.textContent = 'Your rhythm';
-    ps().prepend(o);
-  }
-  ps().value = '';
+  const s = JSON.stringify(st.pat);
+  patNo = PRESETS.findIndex((p) => JSON.stringify(p) === s);
+  $('#lcdPat').textContent = patNo >= 0 ? String(patNo + 1).padStart(2, '0') : '--';
 }
 
 export function loadPat(p) {
   st.pat = clone(p);
   syncRows();
-  voiceBinds.forEach((f) => f());
   if (st.AC) {
     st.BUF = makeBufs(st.AC, st.pat);
     st.CH.upd(fxOf(st.pat));
@@ -80,7 +67,7 @@ function generate() {
     };
   });
   loadPat(Object.assign({}, pat, {name: 'Your rhythm', voices: vs}));
-  toast('New rhythm. No bar lines anywhere.');
+  toast('New rhythm');
 }
 
 // Force pulse, tak and tick onto a shared 6-step pulse so the guard has something to break up.
@@ -107,24 +94,13 @@ function tempt() {
   saveSoon();
   markPreset();
   if (!st.playing) setPlay(true);
-  toast(
-    pat.guard
-      ? 'Pulse, tak and tick now share one 6-step pulse. Watch the listener pull them apart.'
-      : 'Pulse, tak and tick now share one 6-step pulse. Gentle has no listener, so switch to Strict to see it dissolve.',
-  );
+  toast(pat.guard ? 'Tempted: one 6-step pulse' : 'Gentle has no listener');
 }
 
 export function buildPresets() {
-  PRESETS.forEach((p, i) => {
-    const o = document.createElement('option');
-    o.value = i;
-    o.textContent = p.name;
-    ps().append(o);
-  });
-  ps().addEventListener('change', () => {
-    if (ps().value === '') return;
-    loadPat(PRESETS[+ps().value]);
-  });
+  // Tap the LCD for the next pattern.
+  $('#lcd').addEventListener('click', () => loadPat(PRESETS[(patNo + 1) % PRESETS.length]));
   $('#gen').addEventListener('click', generate);
   $('#tempt').addEventListener('click', tempt);
+  markPreset();
 }

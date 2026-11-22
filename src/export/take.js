@@ -14,7 +14,7 @@ async function exportTake() {
   const sr = 44100,
     secs = 32,
     len = Math.ceil((secs + 2.5) * sr);
-  toast('Rendering 32 seconds…');
+  toast('Rendering 32 s…');
   try {
     const oc = new OfflineAudioContext(1, len, sr),
       p = clone(st.pat),
@@ -50,15 +50,11 @@ async function exportTake() {
         },
       ]),
     });
-    toast('Saved ' + n + '.zip');
+    toast('Saved');
   } catch (e) {
     const c = e && e.code;
     if (c === 'declined') return;
-    toast(
-      c === 'rate_limited'
-        ? 'A save prompt is already open'
-        : 'The take could not be rendered or saved here.',
-    );
+    toast(c === 'rate_limited' ? 'Save prompt open' : 'Render failed', true);
   }
 }
 
@@ -66,11 +62,11 @@ function copyRhythm() {
   const t = JSON.stringify(st.pat, null, 1);
   try {
     navigator.clipboard.writeText(t).then(
-      () => toast('Rhythm copied'),
-      () => toast('Copy was blocked here'),
+      () => toast('Copied'),
+      () => toast('Copy blocked', true),
     );
   } catch (e) {
-    toast('Copy was blocked here');
+    toast('Copy blocked', true);
   }
 }
 

@@ -1,0 +1,153 @@
+/* No One — talam keypad style system — generated from tokens.json */
+:root,
+[data-theme='paper'] {
+  --paper-100: #eee5cf; /* Page ground: the cream of the enclosure. Every screen sits on it. Ink on it is 13.2:1. */
+  --paper-200: #f6efdd; /* Inset panels and windows (ring window, dial panel) and the text color on dark or saturated keys. Ink on it is 14.5:1. */
+  --paper-300: #d9d0b8; /* Unselected utility keys (the guard selector). Ink on it is 10.8:1. */
+  --ink: #3a1018; /* Text, panel borders, dial pointers, the selected-ring hairline and the selection outline. A maroon-black, never pure black. 13.2:1 on paper-100. */
+  --ink-soft: #6b3f45; /* Secondary text only: captions and the guard label in the window corner. 6.9:1 on paper-100, 7.6:1 on paper-200. */
+  --maroon: #7a1f2b; /* Deep identity color; the kick voice. Text on it is paper-200 (8.9:1). */
+  --marigold: #e8a219; /* The tom voice and the New rhythm key. Ink on it is 7.6:1. Known gap: as a mark on paper-200 it is only 1.9:1 (ring hits and ghost outlines); see README, Known gaps. */
+  --vermilion: #b8371f; /* The snare voice and the Start/Stop key. paper-200 on it is 5.1:1. */
+  --teal: #12666a; /* The clap voice and the selected guard key. paper-200 on it is 5.8:1. */
+  --indigo: #2f3b6b; /* The clang voice. paper-200 on it is 9.4:1. */
+  --stone: #968c7a; /* The hat voice and the rotate keys: the neutral, grey-keypad role. Ink on it is 5.0:1. Known gap: as a mark on paper-200 it is 2.9:1. */
+  --orange: #d9622b; /* The Tempt it key only. Ink on it is 4.5:1: passes at 14px bold, so never use it behind smaller text. */
+  --strike: #c23a22; /* Strike marks and nothing else: the line through 'One' in the wordmark and the crossed-out 1 at the top of the ring. 4.7:1 on paper-200. */
+  --lcd-bg: #22100f; /* The one dark surface: the LCD readout. */
+  --lcd-amber: #ffb24a; /* Readout digits and the tempo dial pointer. 10.2:1 on lcd-bg. */
+  --lcd-alert: #ff7a59; /* The refusal message on the LCD ('Downbeat refused'). 7.1:1 on lcd-bg. */
+  --focus: #1f4fbf; /* Keyboard focus ring only, 3px with 2px offset. 5.7:1 on paper-100, 6.3:1 on paper-200. */
+  --on-dark: var(--paper-200); /* Text and icons on maroon, vermilion, teal and indigo keys. */
+  --ring-off: #3a101817; /* Fill of an empty step segment on the ring (ink at 9%). The first step of a loop is drawn with a dashed ink outline instead. */
+  --voice-kick: var(
+    --maroon
+  ); /* Voice 1. A voice keeps its color on its key, its ring, its dial face and its hits. */
+  --voice-tom: var(--marigold); /* Voice 2. */
+  --voice-snare: var(--vermilion); /* Voice 3. */
+  --voice-clap: var(--teal); /* Voice 4. */
+  --voice-hat: var(--stone); /* Voice 5. */
+  --voice-clang: var(--indigo); /* Voice 6. */
+}
+:root {
+  --space-1: 4px; /* Hairline gaps: label to value, icon to label. */
+  --space-2: 6px; /* Gap inside the action row and between tabs. */
+  --space-3: 8px; /* Gap between keys in a grid; panel padding on the short side. */
+  --space-4: 10px; /* Gap between stacked panels and rows on the screen. */
+  --space-5: 12px; /* Key padding; the screen's top and bottom padding. */
+  --space-6: 16px; /* The screen's side padding. */
+  --radius-tab: 6px; /* Tab keys. */
+  --radius-lcd: 8px; /* The LCD readout. */
+  --radius-key: 10px; /* Voice, action and guard keys. */
+  --radius-panel: 14px; /* The dial panel. */
+  --radius-window: 16px; /* The ring window, the largest inset. */
+  --border-hairline: 1.5px; /* Tab keys, ring segments' outlines, the ghost outline. */
+  --border-panel: 2px; /* Inset panel and window borders, the maroon-ink frame that holds a group of controls. */
+  --border-select: 3px; /* Selection outline on a selected key, at 2px offset. Selection is outline plus fill state, never color alone. */
+  --border-focus: 3px; /* Keyboard focus ring width, at 2px offset. */
+  --key-height: 50px; /* Voice keys. Above the 44px touch minimum. */
+  --action-height: 44px; /* Action keys. The touch minimum. */
+  --guard-height: 40px; /* Guard selector keys. Below 44px: a known gap, offset by the 8px gaps. */
+  --tab-height: 24px; /* Tab keys. Below 44px: a known gap; tabs are secondary and switch a view. */
+  --canvas-width: 390px; /* The phone screen the system is designed at. */
+  --canvas-height: 844px; /* One screen, no scroll. */
+  --font-display: 'Alfa Slab One', Rockwell, Georgia, serif;
+  --font-ui: 'IBM Plex Sans Condensed', 'Arial Narrow', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  --text-wordmark: 400 34px/1 var(--font-display); /* The wordmark in the screen header. 'One' carries the strike token. */
+  --text-wordmark-cover: 400 96px/0.95 var(--font-display); /* The wordmark on the cover only. */
+  --text-key-label: 600 16px/1 var(--font-ui); /* Voice key names. */
+  --text-action-label: 700 14px/1 var(--font-ui); /* Action and guard keys. 14px bold is the floor on the orange key. */
+  --text-tab-label: 600 11.5px/1 var(--font-ui); /* Tab keys. Set in uppercase. */
+  --text-legend: 600 10.5px/1.2 var(--font-ui); /* Printed legends: dial labels, window corner labels, the guard label. Set in uppercase. */
+  --text-caption: 600 10px/1.2 var(--font-ui); /* The line under the wordmark. Set in uppercase, ink-soft. */
+  --text-lcd-numeral: 600 22px/1 var(--font-mono); /* Pattern number and BPM on the LCD. */
+  --text-lcd-unit: 500 9px/1 var(--font-mono); /* PAT and BPM beside the numerals. */
+  --text-lcd-note: 500 10px/1.2 var(--font-mono); /* The cycle line on the LCD: steps and seconds. */
+  --text-readout: 600 11.5px/1.2 var(--font-mono); /* Dial values and the selected-loop readout. */
+  --text-step-count: 600 18px/1 var(--font-mono); /* The loop length printed on a voice key. */
+}
+.wordmark {
+  font-family: var(--font-display);
+  font-size: 34px;
+  line-height: 1;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.wordmark-cover {
+  font-family: var(--font-display);
+  font-size: 96px;
+  line-height: 0.95;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.key-label {
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.action-label {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+.tab-label {
+  font-family: var(--font-ui);
+  font-size: 11.5px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.legend {
+  font-family: var(--font-ui);
+  font-size: 10.5px;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+.caption {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+}
+.lcd-numeral {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.lcd-unit {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+}
+.lcd-note {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.2;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+.readout {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.step-count {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: 0;
+}

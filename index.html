@@ -8,97 +8,145 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;700&family=Saira+Stencil+One&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap"
     />
   </head>
   <body>
-    <div class="wrap">
+    <main class="screen">
       <header>
-        <h1>
-          No <s>One</s><small>A drum machine with no downbeat · polymetric loops guarded against the 1</small>
-        </h1>
-        <div class="bar">
-          <select id="preset" aria-label="Rhythm"></select>
-          <button id="gen" type="button">New rhythm</button>
-          <button id="tempt" type="button">Tempt it</button>
-          <button id="play" type="button" aria-pressed="false">Play</button>
+        <div class="brand">
+          <h1 class="wordmark">No <s>One</s></h1>
         </div>
+        <button class="lcd" id="lcd" type="button" aria-label="Pattern. Tap for the next pattern">
+          <span class="top">
+            <span><span class="u">PAT </span><span class="n" id="lcdPat">01</span></span>
+            <span><span class="n" id="lcdBpm">87</span><span class="u"> BPM</span></span>
+          </span>
+          <span class="note" id="lcdNote"></span>
+        </button>
       </header>
 
-      <section class="mon" aria-label="Orbits and gravity meter">
-        <canvas id="mc"></canvas>
-        <div class="monbar" id="ro">
-          Press Play. Each ring is a loop of its own length; the bars on the right show whether a steady pulse
-          is forming.
-        </div>
-      </section>
-
-      <section class="chip">
-        <h2>
-          <div><span>U1</span>Downbeat guard</div>
-          <em id="guardro"></em>
-        </h2>
-        <div class="seg" id="guard" role="group" aria-label="Guard strength"></div>
-        <ul class="rules" id="rules"></ul>
-        <p class="note">There is no off switch.</p>
-        <div class="khali">
-          <div class="seg">
-            <button type="button" id="khali" aria-pressed="false">Khali</button
-            ><button type="button" id="khhole" aria-pressed="false">Silent start</button>
+      <section class="window" aria-label="Loop rings">
+        <span class="corner tl" id="cGuard"></span>
+        <span class="corner tr" id="cKhali"></span>
+        <svg
+          id="ring"
+          viewBox="0 0 320 320"
+          role="group"
+          aria-label="Loop rings, outermost Pulse, innermost Breath"
+        ></svg>
+        <div class="under">
+          <canvas class="meter l" id="mBeat" aria-label="Beat gravity"></canvas>
+          <canvas class="meter r" id="mBar" aria-label="Bar gravity"></canvas>
+          <div class="legend-row" aria-hidden="true">
+            <span
+              ><svg width="14" height="14" viewBox="0 0 14 14">
+                <rect
+                  x="1.5"
+                  y="1.5"
+                  width="11"
+                  height="11"
+                  rx="2"
+                  fill="var(--paper-200)"
+                  stroke="var(--ink)"
+                  stroke-width="1.8"
+                /></svg
+              >Ghost</span
+            >
+            <span
+              ><svg width="14" height="14" viewBox="0 0 14 14">
+                <rect x="1" y="1" width="12" height="12" rx="2" fill="var(--ink)" /></svg
+              >Tak</span
+            >
+            <span
+              ><svg width="14" height="14" viewBox="0 0 14 14">
+                <rect x="1" y="1" width="12" height="12" rx="2" fill="var(--ink)" />
+                <path
+                  d="M3.5 9.5A3.5 3.5 0 0 1 10.5 9.5"
+                  fill="none"
+                  stroke="var(--paper-200)"
+                  stroke-width="2"
+                /></svg
+              >Dum</span
+            >
+            <span
+              ><svg width="14" height="14" viewBox="0 0 14 14">
+                <rect x="1" y="1" width="12" height="12" rx="2" fill="var(--ink)" />
+                <circle cx="7" cy="7" r="2.4" fill="var(--paper-200)" /></svg
+              >Accent</span
+            >
           </div>
-          <div class="ctl">
-            <label for="khw">Khali share of each pass</label><output id="khwO"></output
-            ><input type="range" id="khw" min="15" max="40" step="1" />
-          </div>
         </div>
       </section>
 
-      <section class="chip">
-        <h2>
-          <div><span>U2</span>Loops</div>
-          <em id="lcmro"></em>
-        </h2>
-        <div class="rows"><div class="rowsin" id="rows"></div></div>
-        <div class="legend">
-          <span><i style="background: #2a5a44"></i>Ghost</span
-          ><span><i style="background: var(--phos)"></i>Hit</span
-          ><span><i style="background: var(--led)"></i>Accent</span
-          ><span><i style="border-style: dashed"></i>First step: ghost only</span>
-        </div>
-        <p class="note">
-          Tap a step to cycle hit, accent, ghost, off. Lengths that would make a bar (2, 4, 8, 12, 16) are not
-          on the menu. The arrows rotate a loop against the others.
-        </p>
-        <div class="ctl" style="max-width: 420px">
-          <label for="tempo">Tempo</label><output id="tempoO"></output
-          ><input type="range" id="tempo" min="50" max="170" step="1" />
-        </div>
+      <div class="vkeys" id="vkeys" role="group" aria-label="Voices"></div>
+
+      <div class="loopbar">
+        <span class="lbl">Loop</span>
+        <button type="button" class="step" id="lenDn" aria-label="Shorter loop">&#8249;</button>
+        <output class="readout" id="lenO"></output>
+        <button type="button" class="step" id="lenUp" aria-label="Longer loop">&#8250;</button>
+        <button type="button" class="mute" id="mute" aria-pressed="false">Mute</button>
+      </div>
+
+      <section class="panel" id="panel" aria-label="Dials">
+        <div class="tabs" id="tabs" role="group" aria-label="Dial page"></div>
+        <div class="slots" id="slots"></div>
+        <div class="sep"></div>
+        <div id="tempoSlot"></div>
       </section>
 
-      <section class="board">
-        <div class="chip">
-          <h2>
-            <div><span>U3</span>Voices</div>
-          </h2>
-          <div class="vtab" id="vtab"></div>
-        </div>
-        <div class="chip" id="out">
-          <h2>
-            <div><span>U4</span>Output stage</div>
-          </h2>
-        </div>
-      </section>
+      <div class="guardrow">
+        <span class="lbl">Downbeat guard</span>
+        <div class="gkeys" id="guard" role="group" aria-label="Guard strength"></div>
+      </div>
 
-      <section class="bar">
-        <button id="exp" type="button" hidden>Export 32 seconds (.zip)</button>
-        <button id="copy" type="button">Copy rhythm</button>
-      </section>
-      <p class="note">
-        The voices are the Night Circuit Drums circuits. The guard runs the same way in export, so a rendered
-        take is as free of the 1 as what you hear live.
-      </p>
-    </div>
-    <div id="toast" hidden></div>
+      <div class="actions">
+        <button id="play" class="act" type="button" aria-pressed="false">
+          <svg class="ico" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+            <path d="M3 1.5L12 7L3 12.5Z" /></svg
+          >Start
+        </button>
+        <button id="gen" class="act" type="button">New rhythm</button>
+        <button id="tempt" class="act" type="button">Tempt it</button>
+        <button id="rotL" class="act" type="button" aria-label="Rotate loop earlier">
+          <svg class="ico st" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+            <path d="M9 2L4 7L9 12" />
+          </svg>
+        </button>
+        <button id="rotR" class="act" type="button" aria-label="Rotate loop later">
+          <svg class="ico st" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+            <path d="M5 2L10 7L5 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="utils">
+        <button id="exp" class="util" type="button" hidden>Export 32 s</button>
+        <button id="copy" class="util" type="button">Copy rhythm</button>
+        <button id="helpBtn" class="util" type="button">Help</button>
+      </div>
+    </main>
+
+    <dialog id="help" aria-label="Help">
+      <h2>How it works</h2>
+      <ul>
+        <li>
+          Tap a ring or a voice key to select it. On the selected ring, tap a step to cycle tak, dum, ghost,
+          off.
+        </li>
+        <li>Long-press (or Shift-click) a tak or dum to accent it.</li>
+        <li>
+          The arrows rotate the selected loop against the others. Loop sets its length; Mute silences it.
+        </li>
+        <li>Drag a dial up or down, or focus it and use the arrow keys. Tap the LCD for the next pattern.</li>
+        <li>The two small meters show beat and bar gravity. Flat bars mean no felt downbeat.</li>
+      </ul>
+      <h2>Rules</h2>
+      <ul id="rules"></ul>
+      <p class="stats" id="helpStats"></p>
+      <button type="button" class="util" id="helpClose">Close</button>
+    </dialog>
 
     <script type="module" src="/src/main.js"></script>
   </body>

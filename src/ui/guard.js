@@ -1,4 +1,4 @@
-// U1: guard strength buttons and the rule list.
+// The guard selector (three keys) and the help sheet that holds the rules.
 import {$} from '../lib/dom.js';
 import {st} from '../state.js';
 import {GUARDS, RULES, KHALI_RULE} from '../model/constants.js';
@@ -31,36 +31,19 @@ export function buildGuard() {
   kl.id = 'khrule';
   kl.textContent = KHALI_RULE;
   $('#rules').append(kl);
-  $('#khali').addEventListener('click', () => {
-    st.pat.khali.on = st.pat.khali.on ? 0 : 1;
-    khaliChanged();
+  $('#helpBtn').addEventListener('click', () => {
+    syncGuard();
+    $('#help').showModal();
   });
-  $('#khhole').addEventListener('click', () => {
-    st.pat.khali.hole = st.pat.khali.hole ? 0 : 1;
-    khaliChanged();
-  });
-  $('#khw').addEventListener('input', (e) => {
-    st.pat.khali.w = +e.target.value;
-    khaliChanged();
-  });
+  $('#helpClose').addEventListener('click', () => $('#help').close());
 }
-function khaliChanged() {
-  syncGuard();
-  saveSoon();
-  markPreset();
-}
+
 export function syncGuard() {
   [...$('#guard').children].forEach((b, i) => b.setAttribute('aria-pressed', String(i === st.pat.guard)));
-  const k = st.pat.khali;
-  $('#khali').setAttribute('aria-pressed', String(!!k.on));
-  $('#khw').value = k.w;
-  $('#khwO').textContent = k.w + '%';
-  $('#khw').disabled = !k.on;
-  $('#khhole').setAttribute('aria-pressed', String(!!k.hole));
-  $('#khhole').disabled = !k.on;
+  $('#cGuard').textContent = `Guard · ${GUARDS[st.pat.guard]}`;
   [...$('#rules').children].forEach((li) => {
-    const on = li.id === 'khrule' ? !!k.on : +li.dataset.lvl <= st.pat.guard;
+    const on = li.id === 'khrule' ? !!st.pat.khali.on : +li.dataset.lvl <= st.pat.guard;
     li.className = on ? 'on' : 'off';
   });
-  $('#guardro').textContent = dissolvedText();
+  $('#helpStats').textContent = dissolvedText();
 }

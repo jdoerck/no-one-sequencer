@@ -10,6 +10,7 @@ export const st = {
   AN: null,
   BUF: [], // AudioContext, output chain, analyser, per-voice {n,a} buffers
   playing: false,
+  sel: 0, // selected voice: the ring that edits apply to and the one the dials show
   shownT: -1, // step currently shown as playing
   shownKh: 0, // khali depth of that step (0 outside, 1 edge, 2 middle)
 };

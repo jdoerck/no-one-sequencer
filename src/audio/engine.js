@@ -56,7 +56,7 @@ export function ensure() {
   try {
     st.AC = new (window.AudioContext || window.webkitAudioContext)();
   } catch (e) {
-    toast('Audio is unavailable in this browser');
+    toast('Audio unavailable', true);
     return false;
   }
   st.CH = chain(st.AC, fxOf(st.pat), true);
