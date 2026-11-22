@@ -424,3 +424,42 @@ input[type='range']::-moz-range-thumb {
   z-index: 5;
   max-width: calc(100% - 32px);
 }
+
+/* Khali: a shadow passes over the whole interface, like the wave of the hand that marks khali.
+   It sweeps in from the left when the khali starts and out to the right when it ends. */
+#wave {
+  position: fixed;
+  inset: 0 -40% 0 -40%;
+  pointer-events: none;
+  z-index: 50;
+  background: linear-gradient(
+    90deg,
+    transparent 0,
+    rgba(0, 8, 4, 0.5) 22%,
+    rgba(0, 8, 4, 0.5) 78%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  visibility: hidden;
+}
+#wave.in {
+  visibility: visible;
+  transform: translateX(0);
+  transition: transform 0.35s ease-out;
+}
+#wave.out {
+  visibility: visible;
+  transform: translateX(100%);
+  transition: transform 0.45s ease-in;
+}
+@media (prefers-reduced-motion: reduce) {
+  #wave,
+  #wave.in,
+  #wave.out {
+    transform: none;
+    transition: opacity 0.3s;
+  }
+  #wave:not(.in) {
+    opacity: 0;
+  }
+}
